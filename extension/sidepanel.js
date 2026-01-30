@@ -10,7 +10,6 @@ const loadingState = document.getElementById('loadingState');
 const statusMessage = document.getElementById('statusMessage');
 const saveBtn = document.getElementById('saveBtn');
 const extractBtn = document.getElementById('extractBtn');
-const viewSheetLink = document.getElementById('viewSheetLink');
 
 /**
  * Show status message
@@ -150,8 +149,10 @@ async function saveApplication(event) {
     // Save to storage
     await createApplication(formData);
     
+    // Update lastUpdated timestamp to trigger auto-refresh in sheet UI
+    await chrome.storage.local.set({ lastUpdated: Date.now() });
+    
     showStatus('✓ Application saved successfully!', 'success');
-    viewSheetLink.style.display = 'inline-block';
     
     // Reset form after short delay
     setTimeout(() => {

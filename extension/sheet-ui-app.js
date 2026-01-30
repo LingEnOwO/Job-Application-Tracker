@@ -344,5 +344,21 @@ function setupEventListeners() {
   });
 }
 
+/**
+ * Listen for storage changes to auto-refresh when applications are saved
+ * This enables real-time updates when saving from the side panel
+ */
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === 'local') {
+    // Check if applications or lastUpdated changed
+    if (changes.jobApplications || changes.lastUpdated) {
+      console.log('Storage changed, refreshing applications...');
+      loadApplications().then(() => {
+        render();
+      });
+    }
+  }
+});
+
 // Initialize on load
 init();
