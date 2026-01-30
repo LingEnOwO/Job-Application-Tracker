@@ -2,8 +2,8 @@
  * Main application logic for Sheet UI
  */
 
-import { getAllApplications, updateApplication, deleteApplication, createApplication } from './shared/storage.js';
-import { getTodayISO } from './shared/utils.js';
+import { getAllApplications, updateApplication, deleteApplication, createApplication } from './lib/storage.js';
+import { getTodayISO } from './lib/utils.js';
 import { renderTable, updateSortIndicators } from './components/table.js';
 import { renderSidePeek, closeSidePeek } from './components/sidepanel-view.js';
 import { exportAsCSV, exportAsJSON, importFromJSON } from './utils/export-import.js';
@@ -13,6 +13,9 @@ let applications = [];
 let selectedAppId = null;
 let sortBy = 'applyDate';
 let sortOrder = 'desc';
+let activeFilters = ['all']; // Stage filters
+let searchQuery = ''; // Search keyword
+const NOTES_STORAGE_KEY = 'sheetNotes';
 
 /**
  * Initialize the application
@@ -29,6 +32,7 @@ async function init() {
 async function loadApplications() {
   try {
     applications = await getAllApplications();
+    loadNotes();
   } catch (error) {
     console.error('Failed to load applications:', error);
     applications = [];
@@ -36,11 +40,74 @@ async function loadApplications() {
 }
 
 /**
+ * Load notes from localStorage
+ */
+function loadNotes() {
+  const notes = localStorage.getItem(NOTES_STORAGE_KEY);
+  if (notes) {
+    document.getElementById('notesTextarea').value = notes;
+  }
+}
+
+/**
+ * Save notes to localStorage
+ */
+function saveNotes() {
+  const notes = document.getElementById('notesTextarea').value;
+  localStorage.setItem(NOTES_STORAGE_KEY, notes);
+}
+
+/**
+ * Filter and search applications
+ */
+function getFilteredApplications() {
+  let filtered = applications;
+
+  // Apply stage filters
+  if (!activeFilters.includes('all')) {
+    filtered = filtered.filter(app => activeFilters.includes(app.stage));
+  }
+
+  // Apply search
+  if (searchQuery.trim()) {
+    const query = searchQuery.toLowerCase();
+    filtered = filtered.filter(app => {
+      return (
+        (app.company || '').toLowerCase().includes(query) ||
+        (app.position || '').toLowerCase().includes(query) ||
+        (app.notes || '').toLowerCase().includes(query) ||
+        (app.jobDescription || '').toLowerCase().includes(query)
+      );
+    });
+  }
+
+  return filtered;
+}
+
+/**
+ * Update count display
+ */
+function updateCount() {
+  const filtered = getFilteredApplications();
+  const total = applications.length;
+  const shown = filtered.length;
+  
+  const countText = document.getElementById('countText');
+  if (shown === total) {
+    countText.textContent = `${total} application${total !== 1 ? 's' : ''}`;
+  } else {
+    countText.textContent = `${shown} of ${total} application${total !== 1 ? 's' : ''}`;
+  }
+}
+
+/**
  * Render the UI
  */
 function render() {
+  const filtered = getFilteredApplications();
+  
   renderTable(
-    applications,
+    filtered,
     handleRowClick,
     handleUpdate,
     handleDelete,
@@ -48,6 +115,7 @@ function render() {
     sortOrder
   );
   updateSortIndicators(sortBy, sortOrder);
+  updateCount();
 
   // Render side peek if an app is selected
   if (selectedAppId) {
@@ -207,6 +275,63 @@ function setupEventListeners() {
       handleSort(th.dataset.sort);
     });
   });
+
+  // Filter chips
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const stage = chip.dataset.stage;
+      
+      if (stage === 'all') {
+        activeFilters = ['all'];
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+      } else {
+        // Remove 'all' if selecting specific stage
+        if (activeFilters.includes('all')) {
+          activeFilters = [];
+          document.querySelector('.filter-chip[data-stage="all"]').classList.remove('active');
+        }
+        
+        // Toggle this stage
+        if (activeFilters.includes(stage)) {
+          activeFilters = activeFilters.filter(s => s !== stage);
+          chip.classList.remove('active');
+          
+          // If no filters, reset to 'all'
+          if (activeFilters.length === 0) {
+            activeFilters = ['all'];
+            document.querySelector('.filter-chip[data-stage="all"]').classList.add('active');
+          }
+        } else {
+          activeFilters.push(stage);
+          chip.classList.add('active');
+        }
+      }
+      
+      render();
+    });
+  });
+
+  // Search input
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    render();
+  });
+
+  // Notes toggle
+  const toggleNotesBtn = document.getElementById('toggleNotesBtn');
+  const notesContent = document.getElementById('notesContent');
+  const notesHeader = document.querySelector('.notes-header');
+  
+  notesHeader.addEventListener('click', () => {
+    notesContent.classList.toggle('collapsed');
+    toggleNotesBtn.textContent = notesContent.classList.contains('collapsed') ? '▶' : '▼';
+  });
+
+  // Notes auto-save
+  const notesTextarea = document.getElementById('notesTextarea');
+  notesTextarea.addEventListener('input', saveNotes);
 
   // Close side peek when clicking outside
   document.addEventListener('click', (e) => {

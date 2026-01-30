@@ -2,8 +2,8 @@
  * Side panel logic for review form
  */
 
-import { createApplication } from './shared/storage.js';
-import { getTodayISO } from './shared/utils.js';
+import { createApplication } from './lib/storage.js';
+import { getTodayISO } from './lib/utils.js';
 
 const form = document.getElementById('jobForm');
 const loadingState = document.getElementById('loadingState');

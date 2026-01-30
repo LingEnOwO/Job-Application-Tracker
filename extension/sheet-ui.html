@@ -23,6 +23,43 @@
             </div>
         </header>
 
+        <!-- Notes Section -->
+        <div class="notes-section">
+            <div class="notes-header">
+                <span class="notes-icon">📝</span>
+                <span class="notes-title">Notes</span>
+                <button id="toggleNotesBtn" class="btn-icon">▼</button>
+            </div>
+            <div class="notes-content" id="notesContent">
+                <textarea id="notesTextarea"
+                    placeholder="Add important notes here (e.g., upcoming deadlines, interview tips, etc.)..."></textarea>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="controls-section">
+            <div class="filters-group">
+                <label class="control-label">Filter by Stage:</label>
+                <div class="filter-chips" id="filterChips">
+                    <button class="filter-chip active" data-stage="all">All</button>
+                    <button class="filter-chip" data-stage="Applied">Applied</button>
+                    <button class="filter-chip" data-stage="OA">OA</button>
+                    <button class="filter-chip" data-stage="Phone">Phone</button>
+                    <button class="filter-chip" data-stage="Onsite">Onsite</button>
+                    <button class="filter-chip" data-stage="Offer">Offer</button>
+                    <button class="filter-chip" data-stage="Rejected">Rejected</button>
+                </div>
+            </div>
+            <div class="search-group">
+                <label class="control-label">Search:</label>
+                <input type="text" id="searchInput" class="search-input"
+                    placeholder="Search by company, position, or notes...">
+            </div>
+            <div class="count-display">
+                <span id="countText">0 applications</span>
+            </div>
+        </div>
+
         <div class="main-content">
             <div class="table-container">
                 <div id="emptyState" class="empty-state">

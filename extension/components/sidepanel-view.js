@@ -2,7 +2,7 @@
  * Side peek panel component for viewing/editing application details
  */
 
-import { formatDateForDisplay, formatDateToISO } from '../shared/utils.js';
+import { formatDateForDisplay, formatDateToISO } from '../lib/utils.js';
 
 /**
  * Render side peek panel with application details

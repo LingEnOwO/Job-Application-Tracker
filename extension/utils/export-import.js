@@ -2,7 +2,7 @@
  * Export and import utilities
  */
 
-import { exportData, importData } from '../shared/storage.js';
+import { exportData, importData } from '../lib/storage.js';
 
 /**
  * Export applications as CSV

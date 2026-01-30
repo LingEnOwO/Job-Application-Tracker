@@ -4,58 +4,34 @@ A local-only Chrome extension and web UI for tracking job applications with auto
 
 ## 🎯 Overview
 
-This is a **personal-use MVP** designed to eliminate manual copy/paste when applying to jobs. It consists of:
+This is a **personal-use MVP** designed to eliminate manual copy/paste when applying to jobs.
 
-1. **Chrome Extension** (Manifest V3) - Auto-extracts job information from job postings
-2. **Sheet UI** - Local web interface for viewing and managing applications
+**Chrome Extension** (Manifest V3) with:
+- Auto-extraction from job postings
+- Built-in sheet UI for managing applications
 
 **All data is stored locally in your browser.** No backend, no cloud sync, no authentication required.
 
 ## ✨ Features
 
-### Auto-Extraction
-- Automatically extracts job information from major ATS systems:
-  - Greenhouse
-  - Lever
-  - Ashby
-  - Workday
-- Falls back to generic extraction for other job sites
-- Always captures job URL and apply date
+### Features
 
-### Review & Edit
-- Review extracted data before saving
-- Edit any field manually
-- Add personal notes and metadata
-
-### Sheet UI
-- Notion-like table view of all applications
-- Inline editing for quick updates
-- Sortable columns
-- Side peek panel for detailed view
-- Dark mode support
-
-### Data Management
-- Export to CSV
-- Export to JSON (full backup)
-- Import from JSON (restore/transfer)
+- **Auto-extraction** from Greenhouse, Lever, Ashby, Workday, and generic job sites
+- **Review & edit** extracted data before saving
+- **Built-in sheet UI** with Notion-like table view
+- **Filters** by stage (Applied, OA, Phone, Onsite, Offer, Rejected)
+- **Search** across company, position, notes, and job description
+- **Notes section** for tracking deadlines and important info
+- **Export/Import** data as CSV or JSON
+- **Dark mode** support
 
 ## 📦 Installation
-
-### Chrome Extension
 
 1. Open Chrome and navigate to `chrome://extensions/`
 2. Enable "Developer mode" (toggle in top-right corner)
 3. Click "Load unpacked"
 4. Select the `extension` folder from this project
 5. The extension icon should appear in your toolbar
-
-### Sheet UI
-
-**Recommended**: Access the Sheet UI from the extension to ensure proper data sync.
-
-After saving an application in the extension, click the **"View All Applications"** link. This opens the sheet UI in the extension context, which uses `chrome.storage.local` (same storage as the extension).
-
-**Alternative**: You can also open `sheet-ui/index.html` directly in your browser, but note that it uses `localStorage` instead of `chrome.storage.local`, so data won't sync with the extension.
 
 ## 🚀 Usage
 
@@ -69,11 +45,13 @@ After saving an application in the extension, click the **"View All Applications
 
 ### Managing Applications
 
-1. Click **"View All Applications"** link after saving (recommended)
+1. After saving, click **"View All Applications"** link in the side panel
 2. View all saved applications in the table
-3. Click any row to open the side peek panel
-4. Edit fields directly in the table or side panel
-5. Changes are auto-saved
+3. Click any row to open the side peek panel for detailed view
+4. Edit fields directly in the table or side panel (changes auto-save)
+5. Use filters to view specific stages
+6. Use search to find applications by company, position, or notes
+7. Add general notes in the notes section
 
 ### Exporting Data
 
@@ -115,13 +93,10 @@ Each job application includes:
 
 **Important Notes**:
 - Data is NOT synced across devices
-- Data will be lost if you clear browser data
+- Data will be lost if you clear browser data or uninstall the extension
 - **Always export backups regularly**
-- Use the "View All Applications" link from the extension to ensure proper data sync
 
-**Storage Location**:
-- Extension and Sheet UI (when opened from extension): `chrome.storage.local`
-- Standalone Sheet UI (`sheet-ui/index.html`): `localStorage` (separate from extension)
+**Access**: Use the "View All Applications" link from the extension to access the sheet UI. This ensures you're using the extension context with proper storage access.
 
 ## ⚠️ Limitations
 
@@ -150,37 +125,33 @@ Each job application includes:
 
 ```
 JobSheet/
-├── extension/              # Chrome extension
+├── extension/              # Chrome extension (everything you need)
 │   ├── manifest.json       # Extension manifest
 │   ├── background.js       # Service worker
-│   ├── content.js          # Content script
+│   ├── content.js          # Content script with extraction logic
 │   ├── sidepanel.html      # Review form UI
 │   ├── sidepanel.js        # Review form logic
-│   └── extractors/         # ATS-specific extractors
-│       ├── extractors.js   # Main orchestrator
-│       ├── greenhouse.js
-│       ├── lever.js
-│       ├── ashby.js
-│       └── workday.js
-├── sheet-ui/               # Web UI
-│   ├── index.html          # Main page
-│   ├── styles.css          # Styling
-│   ├── app.js              # Main logic
+│   ├── sheet-ui.html       # Built-in sheet UI
+│   ├── sheet-ui-app.js     # Sheet UI logic
+│   ├── sheet-ui-styles.css # Sheet UI styles
 │   ├── components/         # UI components
 │   │   ├── table.js
 │   │   └── sidepanel-view.js
-│   └── utils/              # Utilities
-│       └── export-import.js
-└── shared/                 # Shared code
-    ├── storage.js          # Storage layer
-    └── utils.js            # Helper functions
+│   ├── utils/              # Utilities
+│   │   └── export-import.js
+│   ├── lib/                # Core libraries
+│   │   ├── storage.js      # Storage layer
+│   │   └── utils.js        # Helper functions
+│   ├── extractors/         # ATS-specific extractors (reference)
+│   └── icon*.png           # Extension icons
+└── README.md
 ```
 
 ### Tech Stack
 
 - **Extension**: Vanilla JavaScript, Manifest V3
 - **UI**: HTML, CSS, JavaScript (ES6 modules)
-- **Storage**: chrome.storage.local, localStorage
+- **Storage**: chrome.storage.local
 - **No frameworks or build tools required**
 
 ### Testing

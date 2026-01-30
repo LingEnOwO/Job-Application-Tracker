@@ -33,13 +33,15 @@ export function getTodayISO() {
 }
 
 /**
- * Parse ISO date string to Date object
- * @param {string} isoString 
+ * Parse ISO date string to Date object in local timezone
+ * @param {string} isoString (YYYY-MM-DD format)
  * @returns {Date|null}
  */
 export function parseISODate(isoString) {
   if (!isoString) return null;
-  return new Date(isoString);
+  // Parse as local date to avoid timezone offset issues
+  const [year, month, day] = isoString.split('-').map(Number);
+  return new Date(year, month - 1, day);
 }
 
 /**
@@ -50,7 +52,7 @@ export function parseISODate(isoString) {
 export function formatDateForDisplay(isoString) {
   if (!isoString) return '';
   const date = parseISODate(isoString);
-  if (!date) return '';
+  if (!date || isNaN(date.getTime())) return '';
   return date.toLocaleDateString('en-US', { 
     year: 'numeric', 
     month: 'short', 
