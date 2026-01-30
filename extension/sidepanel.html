@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Save Job Application</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      padding: 20px;
+      background: #f8f9fa;
+      color: #1a1a1a;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #1a1a1a;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #4a4a4a;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="url"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      background: white;
+      transition: border-color 0.2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .textarea-large {
+      min-height: 150px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+    }
+
+    .checkbox-group label {
+      margin: 0;
+      font-weight: 400;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+
+    .btn-primary:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #4a4a4a;
+      border: 1px solid #d1d5db;
+    }
+
+    .btn-secondary:hover {
+      background: #f3f4f6;
+    }
+
+    .status-message {
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .status-message.success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #6ee7b7;
+    }
+
+    .status-message.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
+
+    .status-message.info {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #93c5fd;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #6b7280;
+    }
+
+    .required {
+      color: #dc2626;
+    }
+
+    .help-text {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .link-button {
+      display: inline-block;
+      margin-top: 16px;
+      color: #3b82f6;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .link-button:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Save Job Application</h1>
+
+    <div id="statusMessage" class="status-message"></div>
+
+    <div id="loadingState" class="loading">
+      Extracting job information...
+    </div>
+
+    <form id="jobForm" style="display: none;">
+      <div class="form-group">
+        <label for="jobUrl">Job URL <span class="required">*</span></label>
+        <input type="url" id="jobUrl" name="jobUrl" required>
+      </div>
+
+      <div class="form-group">
+        <label for="company">Company</label>
+        <input type="text" id="company" name="company">
+      </div>
+
+      <div class="form-group">
+        <label for="position">Position / Role</label>
+        <input type="text" id="position" name="position">
+      </div>
+
+      <div class="form-group">
+        <label for="applyDate">Apply Date <span class="required">*</span></label>
+        <input type="date" id="applyDate" name="applyDate" required>
+      </div>
+
+      <div class="form-group">
+        <label for="stage">Stage</label>
+        <select id="stage" name="stage">
+          <option value="Applied">Applied</option>
+          <option value="OA">OA</option>
+          <option value="Phone">Phone</option>
+          <option value="Onsite">Onsite</option>
+          <option value="Offer">Offer</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="jobId">Job ID</label>
+        <input type="text" id="jobId" name="jobId">
+        <div class="help-text">Optional internal job ID or requisition number</div>
+      </div>
+
+      <div class="form-group">
+        <label for="resumeVersion">Resume Version</label>
+        <input type="text" id="resumeVersion" name="resumeVersion">
+        <div class="help-text">E.g., "Software Engineer v2", "PM Resume"</div>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <input type="checkbox" id="referral" name="referral">
+        <label for="referral">Applied via referral</label>
+      </div>
+
+      <div class="form-group">
+        <label for="jobDescription">Job Description</label>
+        <textarea id="jobDescription" name="jobDescription" class="textarea-large"></textarea>
+        <div class="help-text">Auto-extracted description (editable)</div>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea id="notes" name="notes"></textarea>
+        <div class="help-text">Personal notes about this application</div>
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="btn-secondary" id="extractBtn">Re-extract</button>
+        <button type="submit" class="btn-primary" id="saveBtn">Save Application</button>
+      </div>
+    </form>
+
+    <a href="sheet-ui.html" target="_blank" class="link-button" id="viewSheetLink" style="display: none;">
+      → View All Applications
+    </a>
+  </div>
+
+  <script src="sidepanel.js" type="module"></script>
+</body>
+
+</html>
