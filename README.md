@@ -47,7 +47,7 @@ This is a **personal-use MVP** designed to eliminate manual copy/paste when appl
 
 1. After saving, click **"View All Applications"** link in the side panel
 2. View all saved applications in the table
-3. Click any row to open the side peek panel for detailed view (or use the expand button that appears on hover)
+3. Click any row to open the side peek panel for detailed view
 4. Edit fields directly in the table or side panel (changes auto-save)
 5. Use filters to view specific stages
 6. Use search to find applications by company, position, or notes
