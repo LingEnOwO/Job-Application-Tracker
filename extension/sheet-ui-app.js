@@ -68,15 +68,14 @@ function getFilteredApplications() {
     filtered = filtered.filter(app => activeFilters.includes(app.stage));
   }
 
-  // Apply search
+  // Apply search (company, position, job ID only)
   if (searchQuery.trim()) {
     const query = searchQuery.toLowerCase();
     filtered = filtered.filter(app => {
       return (
         (app.company || '').toLowerCase().includes(query) ||
         (app.position || '').toLowerCase().includes(query) ||
-        (app.notes || '').toLowerCase().includes(query) ||
-        (app.jobDescription || '').toLowerCase().includes(query)
+        (app.jobId || '').toLowerCase().includes(query)
       );
     });
   }
