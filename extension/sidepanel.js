@@ -138,12 +138,11 @@ async function saveApplication(event) {
 
     const formData = getFormData();
     
-    // Validate required fields
-    if (!formData.jobUrl) {
-      throw new Error('Job URL is required');
-    }
-    if (!formData.applyDate) {
-      throw new Error('Apply date is required');
+    // Validate - only block completely empty applications
+    const hasAnyData = formData.jobUrl || formData.company || formData.position || 
+                       formData.jobDescription || formData.notes;
+    if (!hasAnyData) {
+      throw new Error('Please fill in at least one field (URL, company, position, etc.)');
     }
 
     // Save to storage

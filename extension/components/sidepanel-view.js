@@ -36,8 +36,9 @@ export function renderSidePeek(application, onUpdate, onClose) {
 
     <div class="detail-group">
       <div class="detail-label">Job URL</div>
-      <div class="detail-value">
-        <a href="${application.jobUrl}" target="_blank" rel="noopener">${application.jobUrl}</a>
+      <div class="detail-value url-field">
+        <input type="url" id="edit-jobUrl" value="${application.jobUrl || ''}" placeholder="https://..." />
+        ${application.jobUrl ? `<a href="${application.jobUrl}" target="_blank" rel="noopener" class="url-link" title="${application.jobUrl}">🔗 Open</a>` : ''}
       </div>
     </div>
 
@@ -91,13 +92,10 @@ export function renderSidePeek(application, onUpdate, onClose) {
       </div>
     </div>
 
-    <div class="collapsible-section">
-      <div class="collapsible-header" data-target="jobDescription">
-        <span>Job Description</span>
-        <span class="collapse-icon">▼</span>
-      </div>
-      <div class="collapsible-content" id="jobDescription">
-        ${application.jobDescription || 'No description available'}
+    <div class="detail-group">
+      <div class="detail-label">Job Description</div>
+      <div class="detail-value">
+        <textarea id="edit-jobDescription" placeholder="Paste job description here..." rows="8">${application.jobDescription || ''}</textarea>
       </div>
     </div>
 
@@ -111,8 +109,8 @@ export function renderSidePeek(application, onUpdate, onClose) {
 
   // Add event listeners for auto-save
   const fields = [
-    'company', 'position', 'applyDate', 'stage', 'responseDate', 
-    'jobId', 'resumeVersion', 'referral', 'notes'
+    'company', 'position', 'jobUrl', 'applyDate', 'stage', 'responseDate', 
+    'jobId', 'resumeVersion', 'referral', 'jobDescription', 'notes'
   ];
 
   fields.forEach(field => {

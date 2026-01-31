@@ -54,7 +54,9 @@ export function renderTable(applications, onRowClick, onStageChange, onDelete, s
   // Render rows
   tableBody.innerHTML = sorted.map(app => `
     <tr data-id="${app.id}">
-      <td>${formatDateForDisplay(app.applyDate)}</td>
+      <td class="date-cell">
+        <input type="date" class="date-input" data-id="${app.id}" data-field="applyDate" value="${app.applyDate || ''}" />
+      </td>
       <td contenteditable="true" data-field="company">${app.company || ''}</td>
       <td contenteditable="true" data-field="position">${app.position || ''}</td>
       <td>
@@ -67,7 +69,9 @@ export function renderTable(applications, onRowClick, onStageChange, onDelete, s
           <option value="Rejected" ${app.stage === 'Rejected' ? 'selected' : ''}>Rejected</option>
         </select>
       </td>
-      <td>${app.responseDate ? formatDateForDisplay(app.responseDate) : '-'}</td>
+      <td class="date-cell">
+        <input type="date" class="date-input" data-id="${app.id}" data-field="responseDate" value="${app.responseDate || ''}" />
+      </td>
       <td class="actions-cell">
         <button class="btn btn-small btn-danger delete-btn" data-id="${app.id}">Delete</button>
       </td>
@@ -81,7 +85,8 @@ export function renderTable(applications, onRowClick, onStageChange, onDelete, s
     // Row click (excluding interactive elements)
     row.addEventListener('click', (e) => {
       if (e.target.tagName !== 'SELECT' && 
-          e.target.tagName !== 'BUTTON' && 
+          e.target.tagName !== 'BUTTON' &&
+          e.target.tagName !== 'INPUT' &&
           !e.target.hasAttribute('contenteditable')) {
         onRowClick(id);
       }
@@ -101,6 +106,16 @@ export function renderTable(applications, onRowClick, onStageChange, onDelete, s
           e.preventDefault();
           e.target.blur();
         }
+      });
+    });
+
+    // Date inputs
+    row.querySelectorAll('.date-input').forEach(input => {
+      input.addEventListener('change', (e) => {
+        e.stopPropagation();
+        const field = e.target.dataset.field;
+        const value = e.target.value;
+        onStageChange(id, { [field]: value });
       });
     });
 
