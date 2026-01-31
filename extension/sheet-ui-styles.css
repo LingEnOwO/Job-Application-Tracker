@@ -538,7 +538,7 @@ body {
 }
 
 .side-peek.open {
-  transform: translateX(0);
+  transform: translateX(0) !important;
 }
 
 .side-peek-header {
@@ -685,6 +685,24 @@ body {
   text-decoration: none;
 }
 
+.create-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 24px;
+  margin-top: 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+.create-actions .btn {
+  flex: 1;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
 .checkbox-field {
   display: flex;
   align-items: center;
@@ -694,6 +712,31 @@ body {
 .checkbox-field input[type="checkbox"] {
   width: auto;
 }
+
+/* Success Message Toast */
+.success-message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #10b981;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.success-message.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 
 /* Responsive */
 @media (max-width: 768px) {

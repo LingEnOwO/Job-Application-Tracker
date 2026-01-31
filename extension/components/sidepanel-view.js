@@ -9,14 +9,22 @@ import { formatDateForDisplay, formatDateToISO } from '../lib/utils.js';
  * @param {Object} application 
  * @param {Function} onUpdate 
  * @param {Function} onClose 
+ * @param {string} mode - 'create' or 'edit'
+ * @param {Function} onCreate - callback for create button (only in create mode)
  */
-export function renderSidePeek(application, onUpdate, onClose) {
+export function renderSidePeek(application, onUpdate, onClose, mode = 'edit', onCreate = null) {
   const sidePeek = document.getElementById('sidePeek');
   const content = document.getElementById('sidePeekContent');
+  const header = document.querySelector('.side-peek-header h2');
 
   if (!application) {
     sidePeek.classList.remove('open');
     return;
+  }
+
+  // Update header based on mode
+  if (header) {
+    header.textContent = mode === 'create' ? 'New Application' : 'Application Details';
   }
 
   content.innerHTML = `
@@ -105,41 +113,79 @@ export function renderSidePeek(application, onUpdate, onClose) {
         <textarea id="edit-notes" placeholder="Add your notes here...">${application.notes || ''}</textarea>
       </div>
     </div>
+
+    ${mode === 'create' ? `
+      <div class="create-actions">
+        <button id="createBtn" class="btn btn-primary">Create</button>
+        <button id="cancelCreateBtn" class="btn btn-secondary">Cancel</button>
+      </div>
+    ` : ''}
   `;
 
-  // Add event listeners for auto-save
-  const fields = [
-    'company', 'position', 'jobUrl', 'applyDate', 'stage', 'responseDate', 
-    'jobId', 'resumeVersion', 'referral', 'jobDescription', 'notes'
-  ];
+  // Add event listeners for auto-save (only in edit mode)
+  if (mode === 'edit') {
+    const fields = [
+      'company', 'position', 'jobUrl', 'applyDate', 'stage', 'responseDate', 
+      'jobId', 'resumeVersion', 'referral', 'jobDescription', 'notes'
+    ];
 
-  fields.forEach(field => {
-    const element = document.getElementById(`edit-${field}`);
-    if (element) {
-      const eventType = element.type === 'checkbox' ? 'change' : 'blur';
-      element.addEventListener(eventType, () => {
-        const value = element.type === 'checkbox' ? element.checked : element.value;
-        onUpdate(application.id, { [field]: value });
-      });
-    }
-  });
-
-  // Collapsible sections
-  content.querySelectorAll('.collapsible-header').forEach(header => {
-    header.addEventListener('click', () => {
-      const target = header.dataset.target;
-      const contentEl = document.getElementById(target);
-      contentEl.classList.toggle('collapsed');
-      const icon = header.querySelector('.collapse-icon');
-      icon.textContent = contentEl.classList.contains('collapsed') ? '▶' : '▼';
+    fields.forEach(field => {
+      const element = document.getElementById(`edit-${field}`);
+      if (element) {
+        const eventType = element.type === 'checkbox' ? 'change' : 'blur';
+        element.addEventListener(eventType, () => {
+          const value = element.type === 'checkbox' ? element.checked : element.value;
+          onUpdate(application.id, { [field]: value });
+        });
+      }
     });
-  });
+  }
 
-  sidePeek.classList.add('open');
+  // Create mode buttons
+  if (mode === 'create') {
+    const createBtn = document.getElementById('createBtn');
+    const cancelBtn = document.getElementById('cancelCreateBtn');
 
+    createBtn.addEventListener('click', () => {
+      const formData = getFormData();
+      onCreate(formData);
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      onClose();
+    });
+  }
+
+  // Add open class and set inline styles to show panel
+  if (!sidePeek.classList.contains('open')) {
+    sidePeek.classList.add('open');
+  }
+  
+  // Force visibility using inline styles (CSS caching workaround)
+  sidePeek.style.cssText = 'right: 0 !important; transform: none !important;';
+  
   // Close button
   const closeBtn = document.getElementById('closeSidePeek');
   closeBtn.onclick = onClose;
+}
+
+/**
+ * Get form data from side panel inputs
+ */
+function getFormData() {
+  return {
+    company: document.getElementById('edit-company')?.value || '',
+    position: document.getElementById('edit-position')?.value || '',
+    jobUrl: document.getElementById('edit-jobUrl')?.value || '',
+    applyDate: document.getElementById('edit-applyDate')?.value || '',
+    stage: document.getElementById('edit-stage')?.value || 'Applied',
+    responseDate: document.getElementById('edit-responseDate')?.value || '',
+    jobId: document.getElementById('edit-jobId')?.value || '',
+    resumeVersion: document.getElementById('edit-resumeVersion')?.value || '',
+    referral: document.getElementById('edit-referral')?.checked || false,
+    jobDescription: document.getElementById('edit-jobDescription')?.value || '',
+    notes: document.getElementById('edit-notes')?.value || ''
+  };
 }
 
 /**
@@ -147,5 +193,10 @@ export function renderSidePeek(application, onUpdate, onClose) {
  */
 export function closeSidePeek() {
   const sidePeek = document.getElementById('sidePeek');
+  
+  // Reset inline styles
+  sidePeek.style.cssText = '';
+  
+  // Remove open class
   sidePeek.classList.remove('open');
 }

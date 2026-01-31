@@ -191,25 +191,98 @@ function handleCloseSidePeek() {
 /**
  * Handle add new application
  */
-async function handleAddApplication() {
-  const jobUrl = prompt('Enter job URL:');
-  if (!jobUrl) return;
+async function handleAddApplication(e) {
+  // Stop event propagation to prevent the global click listener from closing the panel
+  e.stopPropagation();
+  
+  // Create empty application template with defaults
+  const newAppTemplate = {
+    id: null, // Will be generated on create
+    company: '',
+    position: '',
+    jobUrl: '',
+    applyDate: getTodayISO(),
+    stage: 'Applied',
+    responseDate: '',
+    jobId: '',
+    resumeVersion: '',
+    referral: false,
+    jobDescription: '',
+    notes: ''
+  };
 
+  // Open side panel in create mode
+  renderSidePeek(
+    newAppTemplate,
+    null, // onUpdate not used in create mode
+    handleCloseSidePeek,
+    'create',
+    handleCreateApplication
+  );
+}
+
+/**
+ * Handle create application from side panel
+ */
+async function handleCreateApplication(formData) {
   try {
-    const newApp = await createApplication({
-      jobUrl,
-      applyDate: getTodayISO(),
-      stage: 'Applied'
-    });
+    // Validate - only block completely empty applications
+    const hasAnyData = formData.jobUrl || formData.company || formData.position || 
+                       formData.jobDescription || formData.notes;
+    if (!hasAnyData) {
+      alert('Please fill in at least one field (URL, company, position, etc.)');
+      return;
+    }
+
+    // Create the application
+    const newApp = await createApplication(formData);
+    
+    // Update lastUpdated to trigger auto-refresh
+    await chrome.storage.local.set({ lastUpdated: Date.now() });
+    
+    // Reload applications and render
     await loadApplications();
     render();
     
-    // Open the new application in side peek
-    handleRowClick(newApp.id);
+    // Close the panel
+    handleCloseSidePeek();
+    
+    // Show success message
+    showSuccessMessage(`Application created successfully!${formData.company ? ` (${formData.company})` : ''}`);
+    
+    // Highlight the new row
+    setTimeout(() => {
+      document.querySelectorAll('tbody tr').forEach(row => {
+        row.classList.remove('selected');
+        if (row.dataset.id === newApp.id) {
+          row.classList.add('selected');
+        }
+      });
+    }, 100);
   } catch (error) {
     console.error('Failed to create application:', error);
-    alert('Failed to create application');
+    alert('Failed to create application: ' + error.message);
   }
+}
+
+/**
+ * Show success message
+ */
+function showSuccessMessage(message) {
+  // Create message element
+  const messageEl = document.createElement('div');
+  messageEl.className = 'success-message';
+  messageEl.textContent = message;
+  document.body.appendChild(messageEl);
+  
+  // Fade in
+  setTimeout(() => messageEl.classList.add('show'), 10);
+  
+  // Remove after 3 seconds
+  setTimeout(() => {
+    messageEl.classList.remove('show');
+    setTimeout(() => messageEl.remove(), 300);
+  }, 3000);
 }
 
 /**
