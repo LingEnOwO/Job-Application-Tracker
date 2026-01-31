@@ -54,6 +54,13 @@ export function renderTable(applications, onRowClick, onStageChange, onDelete, s
   // Render rows
   tableBody.innerHTML = sorted.map(app => `
     <tr data-id="${app.id}">
+      <td class="expand-gutter">
+        <button class="expand-btn" data-id="${app.id}" aria-label="Open details" title="Open details">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </td>
       <td class="date-cell">
         <input type="date" class="date-input" data-id="${app.id}" data-field="applyDate" value="${app.applyDate || ''}" />
       </td>
@@ -124,6 +131,13 @@ export function renderTable(applications, onRowClick, onStageChange, onDelete, s
     stageSelect.addEventListener('change', (e) => {
       e.stopPropagation();
       onStageChange(id, { stage: e.target.value });
+    });
+
+    // Expand button
+    const expandBtn = row.querySelector('.expand-btn');
+    expandBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      onRowClick(id);
     });
 
     // Delete button

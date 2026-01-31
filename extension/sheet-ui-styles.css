@@ -416,6 +416,51 @@ body {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+/* Expand button gutter */
+.expand-gutter {
+  width: 32px;
+  padding: 8px 4px !important;
+  text-align: center;
+}
+
+.expand-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s;
+}
+
+.applications-table tbody tr:hover .expand-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.expand-btn:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+}
+
+.expand-btn:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.expand-btn svg {
+  display: block;
+}
+
 .stage-badge {
   display: inline-block;
   padding: 4px 10px;

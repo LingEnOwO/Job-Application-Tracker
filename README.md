@@ -18,7 +18,7 @@ This is a **personal-use MVP** designed to eliminate manual copy/paste when appl
 
 - **Auto-extraction** from Greenhouse, Lever, Ashby, Workday, and generic job sites
 - **Review & edit** extracted data before saving
-- **Built-in sheet UI** with Notion-like table view
+- **Built-in sheet UI** with interactive table view and expandable row details
 - **Filters** by stage (Applied, OA, Phone, Onsite, Offer, Rejected)
 - **Search** across company, position, notes, and job description
 - **Notes section** for tracking deadlines and important info
@@ -47,7 +47,7 @@ This is a **personal-use MVP** designed to eliminate manual copy/paste when appl
 
 1. After saving, click **"View All Applications"** link in the side panel
 2. View all saved applications in the table
-3. Click any row to open the side peek panel for detailed view
+3. Click any row to open the side peek panel for detailed view (or use the expand button that appears on hover)
 4. Edit fields directly in the table or side panel (changes auto-save)
 5. Use filters to view specific stages
 6. Use search to find applications by company, position, or notes
