@@ -39,59 +39,6 @@ export function extractFromAshby() {
     }
   }
   
-  // // Method 2: Back button aria-label
-  // if (!companyName) {
-  //   const backButton = document.querySelector('.ashby-job-board-back-to-all-jobs-button, [aria-label*="Back to"]');
-  //   if (backButton) {
-  //     const ariaLabel = backButton.getAttribute('aria-label');
-  //     if (ariaLabel) {
-  //       // Extract from "Back to [Company]'s Job Listings"
-  //       const match = ariaLabel.match(/Back to (.+)'s Job Listings/);
-  //       if (match) {
-  //         companyName = match[1];
-  //       }
-  //     }
-  //   }
-  // }
-  
-  // // Method 3: Logo image alt text
-  // if (!companyName) {
-  //   const navImages = document.querySelectorAll('nav img[alt], header img[alt], [class*="nav"] img[alt]');
-  //   for (const img of navImages) {
-  //     if (img.alt && img.alt.trim()) {
-  //       // Prefer images with "wordmark" in class name
-  //       if (img.className.toLowerCase().includes('wordmark')) {
-  //         companyName = img.alt.trim();
-  //         break;
-  //       }
-  //       if (!companyName) {
-  //         companyName = img.alt.trim();
-  //       }
-  //     }
-  //   }
-  // }
-  
-  // // Method 4: URL path (for jobs.ashbyhq.com URLs)
-  // if (!companyName) {
-  //   const hostname = window.location.hostname;
-  //   if (hostname === 'jobs.ashbyhq.com') {
-  //     // Extract from /company-name/job-id
-  //     const pathMatch = window.location.pathname.match(/^\/([^\/]+)/);
-  //     if (pathMatch) {
-  //       // Convert "develop-health" to "Develop Health"
-  //       companyName = pathMatch[1].split('-').map(word => 
-  //         word.charAt(0).toUpperCase() + word.slice(1)
-  //       ).join(' ');
-  //     }
-  //   } else {
-  //     // For custom domains, use subdomain
-  //     const parts = hostname.split('.');
-  //     if (parts.length > 0 && parts[0] !== 'jobs') {
-  //       companyName = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
-  //     }
-  //   }
-  // }
-  
   // Job title
   const titleEl = document.querySelector('[data-testid="job-title"], h1');
   if (titleEl) {
@@ -104,10 +51,16 @@ export function extractFromAshby() {
     data.location = locationEl.textContent.trim();
   }
 
-  // Job description
-  const descEl = document.querySelector('[data-testid="job-description"], .job-description');
-  if (descEl) {
-    data.jobDescription = descEl.textContent.trim();
+  // Job description - try meta description first (cleaner)
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc && metaDesc.content) {
+    data.jobDescription = metaDesc.content.trim();
+  } else {
+    // Fallback to DOM element
+    const descEl = document.querySelector('[data-testid="job-description"], .job-description');
+    if (descEl) {
+      data.jobDescription = descEl.textContent.trim();
+    }
   }
 
   // Job ID from URL
