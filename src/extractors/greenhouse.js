@@ -100,7 +100,8 @@ function extractGreenhouseJobDescription() {
     '.content-intro',
     '.job-alert',  // Remove "Create a job alert" section
     '.app-title',
-    'h1'  // Remove job title
+    'h1',  // Remove job title
+    '.tag-text'  // Remove "New" tags
   ];
   
   removeSelectors.forEach(selector => {
