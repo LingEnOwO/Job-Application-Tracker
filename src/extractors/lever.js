@@ -11,16 +11,43 @@ export function detectLever() {
 export function extractFromLever() {
   const data = {};
 
-  // Company name
-  const companyMeta = document.querySelector('meta[property="og:site_name"]');
-  if (companyMeta) {
-    data.company = companyMeta.content;
-  } else {
+  // Company name - try JSON-LD schema first (most reliable)
+  try {
+    const jsonLdScript = document.querySelector('script[type="application/ld+json"]');
+    if (jsonLdScript) {
+      const jsonData = JSON.parse(jsonLdScript.textContent);
+      if (jsonData.hiringOrganization && jsonData.hiringOrganization.name) {
+        data.company = jsonData.hiringOrganization.name;
+      }
+    }
+  } catch (e) {
+    // JSON parsing failed, continue to fallback
+  }
+
+  // Fallback: og:site_name meta tag
+  if (!data.company) {
+    const companyMeta = document.querySelector('meta[property="og:site_name"]');
+    if (companyMeta) {
+      data.company = companyMeta.content;
+    }
+  }
+
+  // Fallback: extract from page title (e.g., "Job Application for X at Company")
+  if (!data.company && document.title) {
+    const atMatch = document.title.match(/\bat\s+(.+)$/);
+    if (atMatch) {
+      data.company = atMatch[1].trim();
+    }
+  }
+
+  // Fallback: header elements
+  if (!data.company) {
     const companyEl = document.querySelector('.main-header-text-logo, .company-name');
     if (companyEl) {
       data.company = companyEl.textContent.trim();
     }
   }
+
 
   // Job title
   const titleEl = document.querySelector('[data-qa="posting-name"], .posting-headline h2');

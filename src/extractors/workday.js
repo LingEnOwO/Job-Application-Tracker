@@ -11,11 +11,27 @@ export function detectWorkday() {
 export function extractFromWorkday() {
   const data = {};
 
-  // Company name - usually in URL or header
+  // Company name - extract from URL first (Workday-specific, most reliable)
   const hostname = window.location.hostname;
-  const companyMatch = hostname.match(/([^.]+)\.myworkdayjobs\.com/);
+  // Extract first subdomain: cvshealth.wd1.myworkdayjobs.com -> cvshealth
+  const companyMatch = hostname.match(/^([^.]+)\./);
   if (companyMatch) {
     data.company = companyMatch[1].charAt(0).toUpperCase() + companyMatch[1].slice(1);
+  }
+
+  // Fallback: JSON-LD schema
+  if (!data.company) {
+    try {
+      const jsonLdScript = document.querySelector('script[type="application/ld+json"]');
+      if (jsonLdScript) {
+        const jsonData = JSON.parse(jsonLdScript.textContent);
+        if (jsonData.hiringOrganization && jsonData.hiringOrganization.name) {
+          data.company = jsonData.hiringOrganization.name;
+        }
+      }
+    } catch (e) {
+      // JSON parsing failed, continue
+    }
   }
 
   // Job title

@@ -126,19 +126,50 @@ function extractFallback() {
     }
   }
 
-  // Try to find company name in common locations
-  const companySelectors = [
-    '.company-name',
-    '.employer-name',
-    '[itemprop="hiringOrganization"]',
-    '.company'
-  ];
+  // Try to find company name - JSON-LD schema first (most reliable)
+  try {
+    const jsonLdScript = document.querySelector('script[type="application/ld+json"]');
+    if (jsonLdScript) {
+      const jsonData = JSON.parse(jsonLdScript.textContent);
+      if (jsonData.hiringOrganization && jsonData.hiringOrganization.name) {
+        data.company = jsonData.hiringOrganization.name;
+      }
+    }
+  } catch (e) {
+    // JSON parsing failed, continue to fallback
+  }
 
-  for (const selector of companySelectors) {
-    const el = document.querySelector(selector);
-    if (el) {
-      data.company = el.textContent.trim();
-      break;
+  // Fallback: og:site_name meta tag
+  if (!data.company) {
+    const companyMeta = document.querySelector('meta[property="og:site_name"]');
+    if (companyMeta) {
+      data.company = companyMeta.content;
+    }
+  }
+
+  // Fallback: extract from page title (e.g., "Job Application for X at Company")
+  if (!data.company && document.title) {
+    const atMatch = document.title.match(/\bat\s+(.+)$/);
+    if (atMatch) {
+      data.company = atMatch[1].trim();
+    }
+  }
+
+  // Fallback: common DOM selectors
+  if (!data.company) {
+    const companySelectors = [
+      '.company-name',
+      '.employer-name',
+      '[itemprop="hiringOrganization"]',
+      '.company'
+    ];
+
+    for (const selector of companySelectors) {
+      const el = document.querySelector(selector);
+      if (el) {
+        data.company = el.textContent.trim();
+        break;
+      }
     }
   }
 
