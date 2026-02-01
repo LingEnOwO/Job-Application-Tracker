@@ -140,9 +140,16 @@ function extractFallback() {
  * @returns {Object} Extracted job data
  */
 export function extract() {
+  // Get today's date in local timezone
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const applyDate = `${year}-${month}-${day}`;
+  
   const data = {
     jobUrl: extractJobUrl(),
-    applyDate: new Date().toISOString().split('T')[0] // Today's date in YYYY-MM-DD
+    applyDate: applyDate
   };
 
   // Try metadata extraction first

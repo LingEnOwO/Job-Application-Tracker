@@ -25,6 +25,48 @@ This is a **personal-use MVP** designed to eliminate manual copy/paste when appl
 - **Export/Import** data as CSV or JSON
 - **Dark mode** support
 
+## 🛠️ Development Setup
+
+This project uses Vite to bundle the content script from modular source files.
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm
+
+### Build Instructions
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Build the extension:**
+   ```bash
+   npm run build
+   ```
+   This bundles `src/content.js` and extractors into `extension/content.js`.
+
+3. **Development mode (watch):**
+   ```bash
+   npm run dev
+   ```
+   Auto-rebuilds on file changes in `src/`.
+
+### Project Structure
+```
+src/
+├── content.js          # Entry point (imports extractors)
+└── extractors/         # Modular ATS extractors
+    ├── extractors.js   # Main orchestrator
+    ├── ashby.js
+    ├── greenhouse.js
+    ├── lever.js
+    └── workday.js
+
+extension/
+└── content.js          # Bundled output (auto-generated)
+```
+
 ## 📦 Installation
 
 1. Open Chrome and navigate to `chrome://extensions/`

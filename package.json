@@ -1,0 +1,25 @@
+{
+  "name": "jobsheet",
+  "version": "1.0.0",
+  "description": "A local-only Chrome extension and web UI for tracking job applications with auto-extraction capabilities.",
+  "main": "index.js",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "clean": "rm -f extension/content.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LingEnOwO/Job-Application-Tracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LingEnOwO/Job-Application-Tracker/issues"
+  },
+  "homepage": "https://github.com/LingEnOwO/Job-Application-Tracker#readme",
+  "devDependencies": {
+    "vite": "^7.3.1"
+  }
+}
