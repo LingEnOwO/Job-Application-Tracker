@@ -98,11 +98,20 @@ function extractGreenhouseJobDescription() {
     '.logo',
     '.divider',
     '.content-intro',
-    '.job-alert'  // Remove "Create a job alert" section
+    '.job-alert',  // Remove "Create a job alert" section
+    '.app-title',
+    'h1'  // Remove job title
   ];
   
   removeSelectors.forEach(selector => {
     clone.querySelectorAll(selector).forEach(el => el.remove());
+  });
+  
+  // Remove "Back to jobs" links
+  clone.querySelectorAll('a').forEach(link => {
+    if (link.textContent.toLowerCase().includes('back to jobs')) {
+      link.remove();
+    }
   });
   
   // Remove everything after "Apply for this job" headings
