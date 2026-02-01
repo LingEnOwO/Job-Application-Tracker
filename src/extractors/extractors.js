@@ -104,10 +104,26 @@ function extractFromATS(ats) {
 function extractFallback() {
   const data = {};
 
-  // Try to find job title in h1
-  const h1 = document.querySelector('h1');
-  if (h1) {
-    data.position = h1.textContent.trim();
+  // Try to find job title - check page title first (more reliable than h1)
+  if (document.title) {
+    // Many sites use format: "Job Title - Company" or "Job Title | Company"
+    // Extract the first part before common separators
+    const titleParts = document.title.split(/[-|@]/);
+    if (titleParts.length > 0) {
+      const potentialTitle = titleParts[0].trim();
+      // Only use if it's not too short (avoid single words like "Jobs")
+      if (potentialTitle.length > 3) {
+        data.position = potentialTitle;
+      }
+    }
+  }
+
+  // Fallback to h1 if page title didn't work
+  if (!data.position) {
+    const h1 = document.querySelector('h1');
+    if (h1) {
+      data.position = h1.textContent.trim();
+    }
   }
 
   // Try to find company name in common locations
