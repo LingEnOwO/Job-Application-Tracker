@@ -11,40 +11,22 @@ export function detectGreenhouse() {
 export function extractFromGreenhouse() {
   const data = {};
 
-  // Company name - try JSON-LD schema first (most reliable)
-  try {
-    const jsonLdScript = document.querySelector('script[type="application/ld+json"]');
-    if (jsonLdScript) {
-      const jsonData = JSON.parse(jsonLdScript.textContent);
-      if (jsonData.hiringOrganization && jsonData.hiringOrganization.name) {
-        data.company = jsonData.hiringOrganization.name;
-      }
-    }
-  } catch (e) {
-    // JSON parsing failed, continue to fallback
-  }
-
-  // Fallback: og:site_name meta tag
-  if (!data.company) {
-    const companyMeta = document.querySelector('meta[property="og:site_name"]');
-    if (companyMeta) {
-      data.company = companyMeta.content;
-    }
-  }
-
-  // Fallback: extract from page title (e.g., "Job Application for X at Company")
-  if (!data.company && document.title) {
+  // Company name - extract from page title first (e.g., "Job Application for X at Company")
+  if (document.title) {
     const atMatch = document.title.match(/\bat\s+(.+)$/);
     if (atMatch) {
       data.company = atMatch[1].trim();
     }
   }
 
-  // Fallback: header elements
+  // Fallback: extract from URL path (e.g., /flexport/jobs/...)
   if (!data.company) {
-    const header = document.querySelector('.company-name, .header-company-name');
-    if (header) {
-      data.company = header.textContent.trim();
+    const pathname = window.location.pathname;
+    // Match /company-name/jobs/... pattern
+    const pathMatch = pathname.match(/^\/([^\/]+)\/jobs\//);
+    if (pathMatch) {
+      // Capitalize first letter
+      data.company = pathMatch[1].charAt(0).toUpperCase() + pathMatch[1].slice(1);
     }
   }
 
@@ -60,11 +42,8 @@ export function extractFromGreenhouse() {
     data.location = locationEl.textContent.trim();
   }
 
-  // Job description
-  const descEl = document.querySelector('#content, .content, .job-description');
-  if (descEl) {
-    data.jobDescription = descEl.textContent.trim();
-  }
+  // Job description - use filtered DOM extraction
+  data.jobDescription = extractGreenhouseJobDescription();
 
   // Job ID - sometimes in URL or data attributes
   const jobIdMatch = window.location.pathname.match(/\/jobs\/(\d+)/);
@@ -73,4 +52,87 @@ export function extractFromGreenhouse() {
   }
 
   return data;
+}
+
+/**
+ * Extract job description from DOM with filtering
+ * Removes location headers, application forms, and other contaminating content
+ */
+function extractGreenhouseJobDescription() {
+  // Try narrow selectors first
+  const selectors = [
+    '#job_description',
+    '[data-qa="job-description"]',
+    'main.job-post',
+    '.job-post-container',
+    '#content .job__description',
+    '.job-description',
+    '#content'
+  ];
+  
+  let descEl = null;
+  for (const selector of selectors) {
+    descEl = document.querySelector(selector);
+    if (descEl) break;
+  }
+  
+  if (!descEl) {
+    return '';
+  }
+  
+  // Clone the node to avoid modifying the page
+  const clone = descEl.cloneNode(true);
+  
+  // Remove contaminating elements
+  const removeSelectors = [
+    '#application',
+    'form',
+    '.application--container',
+    '.application-form',
+    '#application_form',
+    '.location',
+    '.job__location',
+    '.app-location',
+    'header',
+    '.image-container',
+    '.logo',
+    '.divider',
+    '.content-intro',
+    '.job-alert'  // Remove "Create a job alert" section
+  ];
+  
+  removeSelectors.forEach(selector => {
+    clone.querySelectorAll(selector).forEach(el => el.remove());
+  });
+  
+  // Remove everything after "Apply for this job" headings
+  const applyHeadings = Array.from(clone.querySelectorAll('h1, h2, h3, h4, h5, h6, button'));
+  for (const heading of applyHeadings) {
+    const text = heading.textContent.toLowerCase();
+    if (text.includes('apply for this job') || text.includes('apply now') || text === 'apply') {
+      // Remove this heading and everything after it
+      let current = heading;
+      while (current) {
+        const next = current.nextSibling;
+        current.remove();
+        current = next;
+      }
+      break;
+    }
+  }
+  
+  let text = clone.textContent.trim();
+  
+  // Remove location header if it appears at the start
+  // Pattern: "City, State; City, State" or "City, StateApply"
+  text = text.replace(/^[A-Z][a-z]+,\s+[A-Z]{2}(;\s+[A-Z][a-z]+,\s+[A-Z]{2})*\s*/, '');
+  text = text.replace(/^Apply\s+/, '');
+  
+  // Sanity check: if text still contains contamination, try harder
+  if (text.includes('Apply for this job')) {
+    const cutoff = text.indexOf('Apply for this job');
+    text = text.substring(0, cutoff).trim();
+  }
+  
+  return text;
 }
