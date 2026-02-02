@@ -72,7 +72,7 @@ export function renderTable(
   tableBody.innerHTML = sorted
     .map(
       (app) => `
-    <tr data-id="${app.id}">
+    <tr data-id="${app.id}" class="${app.stage === "Rejected" ? "rejected" : ""}">
       <td class="expand-gutter">
         <button class="expand-btn" data-id="${app.id}" aria-label="Open details" title="Open details">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -99,7 +99,16 @@ export function renderTable(
         <input type="date" class="date-input" data-id="${app.id}" data-field="responseDate" value="${app.responseDate || ""}" />
       </td>
       <td class="actions-cell">
-        <button class="btn btn-small btn-danger delete-btn" data-id="${app.id}">Delete</button>
+        <button class="delete-btn" data-id="${app.id}" aria-label="Delete" title="Delete application">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 4h12M5.5 4V2.5A1.5 1.5 0 0 1 7 1h2a1.5 1.5 0 0 1 1.5 1.5V4m2 0v9a1.5 1.5 0 0 1-1.5 1.5h-6A1.5 1.5 0 0 1 3.5 13V4h9Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="delete-confirm" style="display: none;">
+          <span class="delete-confirm-text">Delete?</span>
+          <button class="delete-confirm-btn" data-id="${app.id}">Yes</button>
+          <button class="delete-cancel-btn">No</button>
+        </div>
       </td>
     </tr>
   `,
@@ -167,11 +176,27 @@ export function renderTable(
 
     // Delete button
     const deleteBtn = row.querySelector(".delete-btn");
+    const deleteConfirm = row.querySelector(".delete-confirm");
+    const deleteConfirmBtn = row.querySelector(".delete-confirm-btn");
+    const deleteCancelBtn = row.querySelector(".delete-cancel-btn");
+
     deleteBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      if (confirm("Are you sure you want to delete this application?")) {
-        onDelete(id);
-      }
+      // Hide delete button and show confirmation
+      deleteBtn.style.display = "none";
+      deleteConfirm.style.display = "flex";
+    });
+
+    deleteConfirmBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      onDelete(id);
+    });
+
+    deleteCancelBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      // Hide confirmation and show delete button again
+      deleteConfirm.style.display = "none";
+      deleteBtn.style.display = "inline-flex";
     });
   });
 }

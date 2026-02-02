@@ -439,6 +439,18 @@ body {
   background: rgba(59, 130, 246, 0.1);
 }
 
+.applications-table tbody tr.rejected {
+  opacity: 0.5;
+  background: rgba(0, 0, 0, 0.03);
+}
+
+@media (prefers-color-scheme: dark) {
+  .applications-table tbody tr.rejected {
+    opacity: 0.5;
+    background: rgba(255, 255, 255, 0.03);
+  }
+}
+
 .applications-table tbody tr.hidden {
   display: none;
 }
@@ -633,24 +645,97 @@ body {
 }
 
 .actions-cell {
-  display: flex;
-  gap: 8px;
+  width: 120px;
+  padding: 8px 4px !important;
+  text-align: center;
+  position: relative;
 }
 
-.btn-small {
-  padding: 4px 8px;
-  font-size: 12px;
+.delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
   border-radius: 4px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s;
 }
 
-.btn-danger {
+.applications-table tbody tr:hover .delete-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-danger);
+}
+
+.delete-btn:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  outline: 2px solid var(--color-danger);
+  outline-offset: 2px;
+}
+
+.delete-btn svg {
+  display: block;
+}
+
+.delete-confirm {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  box-shadow: var(--shadow-sm);
+}
+
+.delete-confirm-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.delete-confirm-btn,
+.delete-cancel-btn {
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.delete-confirm-btn {
   background: var(--color-danger);
   color: white;
-  border: none;
 }
 
-.btn-danger:hover {
+.delete-confirm-btn:hover {
   background: #dc2626;
+}
+
+.delete-cancel-btn {
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.delete-cancel-btn:hover {
+  background: var(--color-border);
 }
 
 /* Side Peek Panel */
