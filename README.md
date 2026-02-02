@@ -87,7 +87,11 @@ src/
     └── workday.js
 
 extension/
-└── content.js          # Bundled output (auto-generated)
+├── content.js          # Bundled output (auto-generated)
+├── assets/             # Static assets
+├── pages/              # Page-level UIs
+├── components/         # Reusable UI components
+└── services/           # Core services
 ```
 
 ## 📦 Installation
@@ -222,20 +226,25 @@ Job-Application-Tracker/
 │   ├── manifest.json       # Extension manifest
 │   ├── background.js       # Service worker
 │   ├── content.js          # Bundled output (auto-generated)
-│   ├── sidepanel.html      # Review form UI
-│   ├── sidepanel.js        # Review form logic
-│   ├── sheet-ui.html       # Built-in sheet UI
-│   ├── sheet-ui-app.js     # Sheet UI logic
-│   ├── sheet-ui-styles.css # Sheet UI styles
-│   ├── components/         # UI components
+│   ├── assets/             # Static assets
+│   │   ├── icon16.png
+│   │   ├── icon48.png
+│   │   └── icon128.png
+│   ├── pages/              # Page-level entry points
+│   │   ├── sheet/          # Sheet UI page
+│   │   │   ├── index.html
+│   │   │   ├── app.js
+│   │   │   └── styles.css
+│   │   └── sidepanel/      # Side panel page
+│   │       ├── index.html
+│   │       └── app.js
+│   ├── components/         # Reusable UI components
 │   │   ├── table.js
 │   │   └── sidepanel-view.js
-│   ├── utils/              # Utilities
-│   │   └── export-import.js
-│   ├── lib/                # Core libraries
-│   │   ├── storage.js      # Storage layer
-│   │   └── utils.js        # Helper functions
-│   └── icon*.png           # Extension icons
+│   └── services/           # Core services
+│       ├── storage.js      # Storage layer
+│       ├── utils.js        # Helper functions
+│       └── export-import.js # Export/import utilities
 └── README.md
 ```
 
