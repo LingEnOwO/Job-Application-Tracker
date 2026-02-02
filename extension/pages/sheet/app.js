@@ -8,15 +8,18 @@ import {
   deleteApplication,
   createApplication,
   clearAllData,
-} from "./lib/storage.js";
-import { getTodayISO } from "./lib/utils.js";
-import { renderTable, updateSortIndicators } from "./components/table.js";
-import { renderSidePeek, closeSidePeek } from "./components/sidepanel-view.js";
+} from "../../services/storage.js";
+import { getTodayISO } from "../../services/utils.js";
+import { renderTable, updateSortIndicators } from "../../components/table.js";
+import {
+  renderSidePeek,
+  closeSidePeek,
+} from "../../components/sidepanel-view.js";
 import {
   exportAsCSV,
   exportAsJSON,
   importFromJSON,
-} from "./utils/export-import.js";
+} from "../../services/export-import.js";
 
 // State
 let applications = [];
