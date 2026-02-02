@@ -3,10 +3,11 @@
  * Coordinates ATS-specific extractors and fallback logic
  */
 
-import { detectGreenhouse, extractFromGreenhouse } from './greenhouse.js';
-import { detectLever, extractFromLever } from './lever.js';
-import { detectAshby, extractFromAshby } from './ashby.js';
-import { detectWorkday, extractFromWorkday } from './workday.js';
+import { detectGreenhouse, extractFromGreenhouse } from "./greenhouse.js";
+import { detectLever, extractFromLever } from "./lever.js";
+import { detectAshby, extractFromAshby } from "./ashby.js";
+import { detectWorkday, extractFromWorkday } from "./workday.js";
+import { detectLinkedIn, extractFromLinkedIn } from "./linkedin.js";
 
 /**
  * Extract job URL (always available)
@@ -26,7 +27,9 @@ function extractMetadata() {
   // Try Open Graph tags
   const ogTitle = document.querySelector('meta[property="og:title"]');
   const ogSiteName = document.querySelector('meta[property="og:site_name"]');
-  const ogDescription = document.querySelector('meta[property="og:description"]');
+  const ogDescription = document.querySelector(
+    'meta[property="og:description"]',
+  );
 
   if (ogTitle) data.position = ogTitle.content;
   if (ogSiteName) data.company = ogSiteName.content;
@@ -44,13 +47,16 @@ function extractMetadata() {
   }
 
   // Try JSON-LD structured data
-  const jsonLdScripts = document.querySelectorAll('script[type="application/ld+json"]');
+  const jsonLdScripts = document.querySelectorAll(
+    'script[type="application/ld+json"]',
+  );
   for (const script of jsonLdScripts) {
     try {
       const jsonData = JSON.parse(script.textContent);
-      if (jsonData['@type'] === 'JobPosting') {
+      if (jsonData["@type"] === "JobPosting") {
         if (jsonData.title) data.position = jsonData.title;
-        if (jsonData.hiringOrganization?.name) data.company = jsonData.hiringOrganization.name;
+        if (jsonData.hiringOrganization?.name)
+          data.company = jsonData.hiringOrganization.name;
         if (jsonData.description) data.jobDescription = jsonData.description;
         if (jsonData.jobLocation?.address?.addressLocality) {
           data.location = jsonData.jobLocation.address.addressLocality;
@@ -70,28 +76,31 @@ function extractMetadata() {
  * @returns {string|null} ATS name or null
  */
 function detectATS() {
-  if (detectGreenhouse()) return 'greenhouse';
-  if (detectLever()) return 'lever';
-  if (detectAshby()) return 'ashby';
-  if (detectWorkday()) return 'workday';
+  if (detectGreenhouse()) return "greenhouse";
+  if (detectLever()) return "lever";
+  if (detectAshby()) return "ashby";
+  if (detectWorkday()) return "workday";
+  if (detectLinkedIn()) return "linkedin";
   return null;
 }
 
 /**
  * Extract from detected ATS
- * @param {string} ats 
+ * @param {string} ats
  * @returns {Object}
  */
 function extractFromATS(ats) {
   switch (ats) {
-    case 'greenhouse':
+    case "greenhouse":
       return extractFromGreenhouse();
-    case 'lever':
+    case "lever":
       return extractFromLever();
-    case 'ashby':
+    case "ashby":
       return extractFromAshby();
-    case 'workday':
+    case "workday":
       return extractFromWorkday();
+    case "linkedin":
+      return extractFromLinkedIn();
     default:
       return {};
   }
@@ -120,7 +129,7 @@ function extractFallback() {
 
   // Fallback to h1 if page title didn't work
   if (!data.position) {
-    const h1 = document.querySelector('h1');
+    const h1 = document.querySelector("h1");
     if (h1) {
       data.position = h1.textContent.trim();
     }
@@ -128,7 +137,9 @@ function extractFallback() {
 
   // Try to find company name - JSON-LD schema first (most reliable)
   try {
-    const jsonLdScript = document.querySelector('script[type="application/ld+json"]');
+    const jsonLdScript = document.querySelector(
+      'script[type="application/ld+json"]',
+    );
     if (jsonLdScript) {
       const jsonData = JSON.parse(jsonLdScript.textContent);
       if (jsonData.hiringOrganization && jsonData.hiringOrganization.name) {
@@ -158,10 +169,10 @@ function extractFallback() {
   // Fallback: common DOM selectors
   if (!data.company) {
     const companySelectors = [
-      '.company-name',
-      '.employer-name',
+      ".company-name",
+      ".employer-name",
       '[itemprop="hiringOrganization"]',
-      '.company'
+      ".company",
     ];
 
     for (const selector of companySelectors) {
@@ -174,7 +185,9 @@ function extractFallback() {
   }
 
   // Try to get main content for job description
-  const mainContent = document.querySelector('main, article, .job-description, .description');
+  const mainContent = document.querySelector(
+    "main, article, .job-description, .description",
+  );
   if (mainContent) {
     data.jobDescription = mainContent.textContent.trim();
   }
@@ -190,13 +203,13 @@ export function extract() {
   // Get today's date in local timezone
   const today = new Date();
   const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
   const applyDate = `${year}-${month}-${day}`;
-  
+
   const data = {
     jobUrl: extractJobUrl(),
-    applyDate: applyDate
+    applyDate: applyDate,
   };
 
   // Try metadata extraction first
