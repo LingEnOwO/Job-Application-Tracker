@@ -7,6 +7,7 @@ A local-only Chrome extension and web UI for tracking job applications with auto
 This is a **personal-use MVP** designed to eliminate manual copy/paste when applying to jobs.
 
 **Chrome Extension** (Manifest V3) with:
+
 - Auto-extraction from job postings
 - Built-in sheet UI for managing applications
 
@@ -16,7 +17,7 @@ This is a **personal-use MVP** designed to eliminate manual copy/paste when appl
 
 ### Features
 
-- **Auto-extraction** from Greenhouse, Lever, Ashby, Workday, and generic job sites
+- **Auto-extraction** from job sites
 - **Review & edit** extracted data before saving
 - **Built-in sheet UI** with interactive table view and expandable row details
 - **Filters** by stage (Applied, OA, Phone, Onsite, Offer, Rejected)
@@ -25,25 +26,40 @@ This is a **personal-use MVP** designed to eliminate manual copy/paste when appl
 - **Export/Import** data as CSV or JSON
 - **Dark mode** support
 
+### Supported Job Sites
+
+| ATS Platform | Status       | Notes                                   |
+| ------------ | ------------ | --------------------------------------- |
+| Greenhouse   | ✅ Supported | Tailored extraction, tested             |
+| Lever        | ✅ Supported | Tailored extraction, tested             |
+| Ashby        | ✅ Supported | Tailored extraction, tested             |
+| Workday      | ✅ Supported | Tailored extraction, tested             |
+| LinkedIn     | ✅ Supported | Tailored extraction, tested             |
+| Other sites  | ⚠️ May work  | Generic extraction, not tailored/tested |
+
 ## 🛠️ Development Setup
 
 This project uses Vite to bundle the content script from modular source files.
 
 ### Prerequisites
+
 - Node.js (v16 or higher)
 - npm
 
 ### Build Instructions
 
 1. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 2. **Build the extension:**
+
    ```bash
    npm run build
    ```
+
    This bundles `src/content.js` and extractors into `extension/content.js`.
 
 3. **Development mode (watch):**
@@ -53,6 +69,7 @@ This project uses Vite to bundle the content script from modular source files.
    Auto-rebuilds on file changes in `src/`.
 
 ### Project Structure
+
 ```
 src/
 ├── content.js          # Entry point (imports extractors)
@@ -61,6 +78,7 @@ src/
     ├── ashby.js
     ├── greenhouse.js
     ├── lever.js
+    ├── linkedin.js
     └── workday.js
 
 extension/
@@ -98,10 +116,12 @@ extension/
 ### Exporting Data
 
 **CSV Export** (for spreadsheet analysis):
+
 - Click "Export CSV" in the Sheet UI
 - Opens in Excel, Google Sheets, etc.
 
 **JSON Export** (for backup):
+
 - Click "Export JSON" in the Sheet UI
 - Save the file as a backup
 
@@ -115,25 +135,26 @@ extension/
 
 Each job application includes:
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| Job URL | String | ✓ | Link to job posting |
-| Apply Date | Date | ✓ | Date you applied (default: today) |
-| Company | String | | Company name |
-| Position | String | | Job title/role |
-| Stage | Select | | Applied, OA, Phone, Onsite, Offer, Rejected |
-| Job ID | String | | Internal job/requisition ID |
-| Response Date | Date | | Date of company response |
-| Resume Version | String | | Which resume you used |
-| Referral | Boolean | | Applied via referral? |
-| Job Description | Text | | Full job description |
-| Notes | Text | | Personal notes (markdown) |
+| Field           | Type    | Description                                 |
+| --------------- | ------- | ------------------------------------------- |
+| Job URL         | String  | Link to job posting (required)              |
+| Apply Date      | Date    | Date you applied (required, default: today) |
+| Company         | String  | Company name                                |
+| Position        | String  | Job title/role                              |
+| Stage           | Select  | Applied, OA, Phone, Onsite, Offer, Rejected |
+| Job ID          | String  | Internal job/requisition ID                 |
+| Response Date   | Date    | Date of company response                    |
+| Resume Version  | String  | Which resume you used                       |
+| Referral        | Boolean | Applied via referral?                       |
+| Job Description | Text    | Full job description                        |
+| Notes           | Text    | Personal notes (markdown)                   |
 
 ## 🔒 Data Storage
 
 **Local Only**: All data is stored in your browser using `chrome.storage.local`.
 
 **Important Notes**:
+
 - Data is NOT synced across devices
 - Data will be lost if you clear browser data or uninstall the extension
 - **Always export backups regularly**
@@ -143,17 +164,20 @@ Each job application includes:
 ## ⚠️ Limitations
 
 ### Auto-Extraction
+
 - Accuracy varies by job site and ATS
 - No AI/LLM - uses deterministic heuristics only
 - Always review extracted data before saving
 
 ### Data Persistence
+
 - Data is browser-specific
 - Not synced across devices
 - Vulnerable to browser data clearing
 - **Export backups to prevent data loss**
 
 ### Out of Scope (Not Implemented)
+
 - Backend or API server
 - Cloud sync
 - Google Sheets integration
@@ -166,11 +190,22 @@ Each job application includes:
 ### Project Structure
 
 ```
-JobSheet/
-├── extension/              # Chrome extension (everything you need)
+Job-Application-Tracker/
+├── package.json            # Dependencies and scripts
+├── vite.config.js          # Vite build configuration
+├── src/                    # Source files (edit these)
+│   ├── content.js          # Entry point
+│   └── extractors/         # Modular ATS extractors
+│       ├── extractors.js   # Main orchestrator
+│       ├── ashby.js
+│       ├── greenhouse.js
+│       ├── lever.js
+│       ├── linkedin.js
+│       └── workday.js
+├── extension/              # Chrome extension (load this in browser)
 │   ├── manifest.json       # Extension manifest
 │   ├── background.js       # Service worker
-│   ├── content.js          # Content script with extraction logic
+│   ├── content.js          # Bundled output (auto-generated)
 │   ├── sidepanel.html      # Review form UI
 │   ├── sidepanel.js        # Review form logic
 │   ├── sheet-ui.html       # Built-in sheet UI
@@ -184,7 +219,6 @@ JobSheet/
 │   ├── lib/                # Core libraries
 │   │   ├── storage.js      # Storage layer
 │   │   └── utils.js        # Helper functions
-│   ├── extractors/         # ATS-specific extractors (reference)
 │   └── icon*.png           # Extension icons
 └── README.md
 ```
@@ -199,6 +233,7 @@ JobSheet/
 ### Testing
 
 Manual testing only for this MVP. Test on:
+
 - Greenhouse job postings (e.g., Airbnb careers)
 - Lever job postings (e.g., Netflix careers)
 - Ashby job postings
