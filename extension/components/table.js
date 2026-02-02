@@ -86,11 +86,11 @@ export function renderTable(
       <td contenteditable="true" data-field="company">${app.company || ""}</td>
       <td contenteditable="true" data-field="position">${app.position || ""}</td>
       <td>
-        <select class="stage-select" data-id="${app.id}">
+        <select class="stage-select stage-${app.stage || "Applied"}" data-id="${app.id}">
           <option value="Applied" ${app.stage === "Applied" ? "selected" : ""}>Applied</option>
           <option value="OA" ${app.stage === "OA" ? "selected" : ""}>OA</option>
           <option value="Phone" ${app.stage === "Phone" ? "selected" : ""}>Phone</option>
-          <option value="Onsite" ${app.stage === "Onsite" ? "selected" : ""}>Onsite</option>
+          <option value="Interview" ${app.stage === "Interview" ? "selected" : ""}>Interview</option>
           <option value="Offer" ${app.stage === "Offer" ? "selected" : ""}>Offer</option>
           <option value="Rejected" ${app.stage === "Rejected" ? "selected" : ""}>Rejected</option>
         </select>
@@ -153,6 +153,8 @@ export function renderTable(
     const stageSelect = row.querySelector(".stage-select");
     stageSelect.addEventListener("change", (e) => {
       e.stopPropagation();
+      // Update select color class
+      stageSelect.className = `stage-select stage-${e.target.value}`;
       onStageChange(id, { stage: e.target.value });
     });
 

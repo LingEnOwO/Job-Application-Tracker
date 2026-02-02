@@ -486,6 +486,67 @@ body {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+/* Stage select styling */
+.stage-select {
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+  background: var(--color-bg);
+  color: var(--color-text);
+  cursor: pointer;
+  font-weight: 500;
+  transition: border-color 0.2s;
+}
+
+.stage-select:hover {
+  border-color: var(--color-primary);
+}
+
+.stage-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Stage select colors based on value */
+.stage-select.stage-Applied {
+  background-color: #9ca3af;
+  color: #ffffff;
+  border-color: #6b7280;
+}
+
+.stage-select.stage-OA {
+  background-color: #93c5fd;
+  color: #ffffff;
+  border-color: #60a5fa;
+}
+
+.stage-select.stage-Phone {
+  background-color: #60a5fa;
+  color: #ffffff;
+  border-color: #3b82f6;
+}
+
+.stage-select.stage-Interview {
+  background-color: #2563eb;
+  color: #ffffff;
+  border-color: #1d4ed8;
+}
+
+.stage-select.stage-Offer {
+  background-color: #34d399;
+  color: #ffffff;
+  border-color: #10b981;
+}
+
+.stage-select.stage-Rejected {
+  background-color: #f87171;
+  color: #ffffff;
+  border-color: #ef4444;
+}
+
 /* Expand button gutter */
 .expand-gutter {
   width: 32px;
@@ -556,9 +617,9 @@ body {
   color: #3730a3;
 }
 
-.stage-Onsite {
-  background: #fce7f3;
-  color: #831843;
+.stage-Interview {
+  background: #bfdbfe;
+  color: #1e40af;
 }
 
 .stage-Offer {
