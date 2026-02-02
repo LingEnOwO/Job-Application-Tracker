@@ -122,19 +122,30 @@ extension/
 
 **CSV Export** (for spreadsheet analysis):
 
-- Click "Export CSV" in the Sheet UI
+- Click the three-dot menu (⋯) in the top-right corner
+- Select "Export CSV"
 - Opens in Excel, Google Sheets, etc.
 
 **JSON Export** (for backup):
 
-- Click "Export JSON" in the Sheet UI
+- Click the three-dot menu (⋯) in the top-right corner
+- Select "Export JSON"
 - Save the file as a backup
 
 ### Importing Data
 
-1. Click "Import JSON" in the Sheet UI
-2. Select a previously exported JSON file
-3. Data will be merged with existing applications
+1. Click the three-dot menu (⋯) in the top-right corner
+2. Select "Import JSON"
+3. Choose a previously exported JSON file
+4. Data will be merged with existing applications
+
+### Clearing All Data
+
+1. Click the three-dot menu (⋯) in the top-right corner
+2. Select "Clear all applications"
+3. Type **DELETE** to confirm (case-sensitive)
+4. All applications will be permanently removed
+5. **This action cannot be undone** - export a backup first!
 
 ## 📊 Data Model
 
