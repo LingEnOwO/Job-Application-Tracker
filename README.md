@@ -20,9 +20,14 @@ This is a **personal-use MVP** designed to eliminate manual copy/paste when appl
 - **Auto-extraction** from job sites
 - **Review & edit** extracted data before saving
 - **Built-in sheet UI** with interactive table view and expandable row details
-- **Filters** by stage (Applied, OA, Phone, Onsite, Offer, Rejected)
+- **Filters** by stage (Applied, OA, Phone, Interview, Offer, Rejected)
+- **Color-coded stages** with visual hierarchy (grey → blue → green/red)
+- **Visual cues** - rejected applications are greyed out for easy filtering
 - **Search** across company, position, notes, and job description
-- **Notes section** for tracking deadlines and important info
+- **Rich text notes** with formatting (bold, italic, underline, strikethrough, lists)
+- **Today's count** - see how many applications you've added today
+- **Hover actions** - trash icon delete with inline confirmation
+- **Auto-sorting** - newest applications always appear first
 - **Export/Import** data as CSV or JSON
 - **Dark mode** support
 
@@ -135,19 +140,19 @@ extension/
 
 Each job application includes:
 
-| Field           | Type    | Description                                 |
-| --------------- | ------- | ------------------------------------------- |
-| Job URL         | String  | Link to job posting (required)              |
-| Apply Date      | Date    | Date you applied (required, default: today) |
-| Company         | String  | Company name                                |
-| Position        | String  | Job title/role                              |
-| Stage           | Select  | Applied, OA, Phone, Onsite, Offer, Rejected |
-| Job ID          | String  | Internal job/requisition ID                 |
-| Response Date   | Date    | Date of company response                    |
-| Resume Version  | String  | Which resume you used                       |
-| Referral        | Boolean | Applied via referral?                       |
-| Job Description | Text    | Full job description                        |
-| Notes           | Text    | Personal notes (markdown)                   |
+| Field           | Type    | Description                                    |
+| --------------- | ------- | ---------------------------------------------- |
+| Job URL         | String  | Link to job posting (required)                 |
+| Apply Date      | Date    | Date you applied (required, default: today)    |
+| Company         | String  | Company name                                   |
+| Position        | String  | Job title/role                                 |
+| Stage           | Select  | Applied, OA, Phone, Interview, Offer, Rejected |
+| Job ID          | String  | Internal job/requisition ID                    |
+| Response Date   | Date    | Date of company response                       |
+| Resume Version  | String  | Which resume you used                          |
+| Referral        | Boolean | Applied via referral?                          |
+| Job Description | Text    | Full job description                           |
+| Notes           | Text    | Personal notes (rich text with formatting)     |
 
 ## 🔒 Data Storage
 
