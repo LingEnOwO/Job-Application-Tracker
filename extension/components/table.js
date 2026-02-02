@@ -2,7 +2,7 @@
  * Table component for displaying job applications
  */
 
-import { formatDateForDisplay } from "../lib/utils.js";
+import { formatDateForDisplay } from "../services/utils.js";
 
 /**
  * Render table with applications

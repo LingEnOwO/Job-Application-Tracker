@@ -3,15 +3,8 @@
   "name": "Job Application Tracker",
   "version": "1.0.0",
   "description": "Track job applications with auto-extraction from job postings",
-  "permissions": [
-    "storage",
-    "activeTab",
-    "scripting",
-    "sidePanel"
-  ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
+  "permissions": ["storage", "activeTab", "scripting", "sidePanel"],
+  "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
   },
@@ -19,7 +12,7 @@
     "default_title": "Save Job Application"
   },
   "side_panel": {
-    "default_path": "sidepanel.html"
+    "default_path": "pages/sidepanel/index.html"
   },
   "web_accessible_resources": [
     {
@@ -28,8 +21,8 @@
     }
   ],
   "icons": {
-    "16": "icon16.png",
-    "48": "icon48.png",
-    "128": "icon128.png"
+    "16": "assets/icon16.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
   }
 }
