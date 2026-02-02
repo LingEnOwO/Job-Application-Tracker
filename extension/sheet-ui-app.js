@@ -116,11 +116,26 @@ function updateCount() {
   const total = applications.length;
   const shown = filtered.length;
 
-  const countText = document.getElementById("countText");
+  // Calculate today's count based on createdAt
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const startOfTodayMs = startOfToday.getTime();
+
+  const todayCount = applications.filter((app) => {
+    const createdAt = app.createdAt || 0;
+    return createdAt >= startOfTodayMs;
+  }).length;
+
+  // Update today count
+  const todayCountEl = document.getElementById("todayCount");
+  todayCountEl.textContent = `Today: ${todayCount}`;
+
+  // Update total count
+  const totalCountEl = document.getElementById("totalCount");
   if (shown === total) {
-    countText.textContent = `${total} application${total !== 1 ? "s" : ""}`;
+    totalCountEl.textContent = `Total: ${total}`;
   } else {
-    countText.textContent = `${shown} of ${total} application${total !== 1 ? "s" : ""}`;
+    totalCountEl.textContent = `Total: ${shown}/${total}`;
   }
 }
 
