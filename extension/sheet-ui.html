@@ -31,8 +31,17 @@
                 <button id="toggleNotesBtn" class="btn-icon">▼</button>
             </div>
             <div class="notes-content" id="notesContent">
-                <textarea id="notesTextarea"
-                    placeholder="Add important notes here (e.g., upcoming deadlines, interview tips, etc.)..."></textarea>
+                <div class="notes-toolbar">
+                    <button class="toolbar-btn" data-command="bold" title="Bold (Ctrl+B)"><strong>B</strong></button>
+                    <button class="toolbar-btn" data-command="italic" title="Italic (Ctrl+I)"><em>I</em></button>
+                    <button class="toolbar-btn" data-command="underline" title="Underline (Ctrl+U)"><u>U</u></button>
+                    <button class="toolbar-btn" data-command="strikeThrough" title="Strikethrough"><s>S</s></button>
+                    <span class="toolbar-divider"></span>
+                    <button class="toolbar-btn" data-command="insertUnorderedList" title="Bulleted List">•</button>
+                    <button class="toolbar-btn" data-command="insertOrderedList" title="Numbered List">1.</button>
+                </div>
+                <div id="notesEditor" class="notes-editor" contenteditable="true"
+                    data-placeholder="Add important notes here (e.g., upcoming deadlines, interview tips, etc.)..."></div>
             </div>
         </div>
 

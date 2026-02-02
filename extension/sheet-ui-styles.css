@@ -113,7 +113,7 @@ body {
 
 .notes-content {
   padding: 16px 20px;
-  max-height: 200px;
+  max-height: 400px;
   transition: max-height 0.3s ease, padding 0.3s ease;
   overflow: hidden;
 }
@@ -123,24 +123,93 @@ body {
   padding: 0 20px;
 }
 
-#notesTextarea {
+/* Notes Toolbar */
+.notes-toolbar {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  flex-wrap: wrap;
+}
+
+.toolbar-btn {
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toolbar-btn:hover {
+  background: var(--color-bg-secondary);
+  border-color: var(--color-primary);
+}
+
+.toolbar-btn:active,
+.toolbar-btn.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.toolbar-divider {
+  width: 1px;
+  background: var(--color-border);
+  margin: 0 4px;
+}
+
+/* Notes Editor */
+.notes-editor {
   width: 100%;
-  min-height: 100px;
+  min-height: 150px;
+  max-height: 300px;
   padding: 12px;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: 0 0 8px 8px;
   font-family: inherit;
   font-size: 14px;
   background: var(--color-bg);
   color: var(--color-text);
-  resize: vertical;
+  overflow-y: auto;
   transition: border-color 0.2s;
+  line-height: 1.6;
 }
 
-#notesTextarea:focus {
+.notes-editor:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.notes-editor[contenteditable]:empty:before {
+  content: attr(data-placeholder);
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.notes-editor ul,
+.notes-editor ol {
+  margin-left: 24px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.notes-editor li {
+  margin: 4px 0;
+}
+
+.notes-editor input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
 }
 
 /* Controls Section */
