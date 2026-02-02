@@ -3,17 +3,19 @@
  * Works with both chrome.storage.local (extension) and localStorage (web UI)
  */
 
-import { generateUUID, getTodayISO } from './utils.js';
+import { generateUUID, getTodayISO } from "./utils.js";
 
-const STORAGE_KEY = 'jobApplications';
-const SCHEMA_KEY = 'customSchema';
+const STORAGE_KEY = "jobApplications";
+const SCHEMA_KEY = "customSchema";
 
 /**
  * Detect if we're in a Chrome extension context
  * @returns {boolean}
  */
 function isChromeExtension() {
-  return typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local;
+  return (
+    typeof chrome !== "undefined" && chrome.storage && chrome.storage.local
+  );
 }
 
 /**
@@ -35,8 +37,8 @@ async function getFromStorage(key) {
 
 /**
  * Set data in storage
- * @param {string} key 
- * @param {*} value 
+ * @param {string} key
+ * @param {*} value
  * @returns {Promise<void>}
  */
 async function setInStorage(key, value) {
@@ -60,7 +62,7 @@ export async function getAllApplications() {
 
 /**
  * Get a single application by ID
- * @param {string} id 
+ * @param {string} id
  * @returns {Promise<Object|null>}
  */
 export async function getApplication(id) {
@@ -70,68 +72,69 @@ export async function getApplication(id) {
 
 /**
  * Create a new job application
- * @param {Object} application 
+ * @param {Object} application
  * @returns {Promise<Object>} Created application with ID
  */
 export async function createApplication(application) {
   const id = generateUUID();
   const newApp = {
     id,
-    company: application.company || '',
-    position: application.position || '',
-    jobUrl: application.jobUrl || '',
+    company: application.company || "",
+    position: application.position || "",
+    jobUrl: application.jobUrl || "",
     applyDate: application.applyDate || getTodayISO(),
-    stage: application.stage || 'Applied',
-    jobId: application.jobId || '',
-    responseDate: application.responseDate || '',
-    resumeVersion: application.resumeVersion || '',
+    stage: application.stage || "Applied",
+    jobId: application.jobId || "",
+    responseDate: application.responseDate || "",
+    resumeVersion: application.resumeVersion || "",
     referral: application.referral || false,
-    jobDescription: application.jobDescription || '',
-    notes: application.notes || '',
-    customValues: application.customValues || {}
+    jobDescription: application.jobDescription || "",
+    notes: application.notes || "",
+    customValues: application.customValues || {},
+    createdAt: Date.now(),
   };
 
   const data = await getFromStorage(STORAGE_KEY);
   data[id] = newApp;
   await setInStorage(STORAGE_KEY, data);
-  
+
   return newApp;
 }
 
 /**
  * Update an existing application
- * @param {string} id 
- * @param {Object} updates 
+ * @param {string} id
+ * @param {Object} updates
  * @returns {Promise<Object|null>}
  */
 export async function updateApplication(id, updates) {
   const data = await getFromStorage(STORAGE_KEY);
-  
+
   if (!data[id]) {
     return null;
   }
 
   data[id] = { ...data[id], ...updates };
   await setInStorage(STORAGE_KEY, data);
-  
+
   return data[id];
 }
 
 /**
  * Delete an application
- * @param {string} id 
+ * @param {string} id
  * @returns {Promise<boolean>}
  */
 export async function deleteApplication(id) {
   const data = await getFromStorage(STORAGE_KEY);
-  
+
   if (!data[id]) {
     return false;
   }
 
   delete data[id];
   await setInStorage(STORAGE_KEY, data);
-  
+
   return true;
 }
 
@@ -146,7 +149,7 @@ export async function getCustomSchema() {
 
 /**
  * Update custom schema
- * @param {Array} schema 
+ * @param {Array} schema
  * @returns {Promise<void>}
  */
 export async function updateCustomSchema(schema) {
@@ -160,27 +163,27 @@ export async function updateCustomSchema(schema) {
 export async function exportData() {
   const applications = await getFromStorage(STORAGE_KEY);
   const schema = await getCustomSchema();
-  
+
   return {
-    version: '1.0',
+    version: "1.0",
     exportDate: new Date().toISOString(),
     applications,
-    customSchema: schema
+    customSchema: schema,
   };
 }
 
 /**
  * Import data from JSON
- * @param {Object} data 
+ * @param {Object} data
  * @returns {Promise<void>}
  */
 export async function importData(data) {
   if (!data || !data.applications) {
-    throw new Error('Invalid import data format');
+    throw new Error("Invalid import data format");
   }
 
   await setInStorage(STORAGE_KEY, data.applications);
-  
+
   if (data.customSchema) {
     await updateCustomSchema(data.customSchema);
   }
