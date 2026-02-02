@@ -14,11 +14,18 @@
             <h1>Job Application Tracker</h1>
             <div class="header-actions">
                 <button id="addRowBtn" class="btn btn-secondary">+ Add Application</button>
-                <div class="export-import-group">
-                    <button id="exportCsvBtn" class="btn btn-secondary">Export CSV</button>
-                    <button id="exportJsonBtn" class="btn btn-secondary">Export JSON</button>
-                    <label for="importJsonInput" class="btn btn-secondary">Import JSON</label>
-                    <input type="file" id="importJsonInput" accept=".json" style="display: none;">
+                <div class="more-menu-container">
+                    <button id="moreMenuBtn" class="btn btn-icon-only" aria-label="More actions" title="More actions">
+                        <span class="more-icon">⋯</span>
+                    </button>
+                    <div id="moreMenu" class="more-menu" style="display: none;">
+                        <button class="menu-item" id="menuExportCsv">Export CSV</button>
+                        <button class="menu-item" id="menuExportJson">Export JSON</button>
+                        <button class="menu-item" id="menuImportJson">Import JSON</button>
+                        <input type="file" id="importJsonInput" accept=".json" style="display: none;">
+                        <div class="menu-separator"></div>
+                        <button class="menu-item menu-item-danger" id="menuClearAll">Clear all applications</button>
+                    </div>
                 </div>
             </div>
         </header>
@@ -104,6 +111,27 @@
                 <div class="side-peek-content" id="sidePeekContent">
                     <!-- Content will be inserted here -->
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clear All Confirmation Modal -->
+    <div id="clearAllModal" class="modal" style="display: none;">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <h2 class="modal-title">Delete all applications?</h2>
+            <p class="modal-body">
+                This will permanently remove all job applications from this device.
+                <strong>This action cannot be undone.</strong>
+            </p>
+            <p class="modal-count" id="modalCount"></p>
+            <div class="modal-confirmation">
+                <label for="deleteConfirmInput" class="confirmation-label">Type <strong>DELETE</strong> to confirm</label>
+                <input type="text" id="deleteConfirmInput" class="confirmation-input" placeholder="DELETE" autocomplete="off">
+            </div>
+            <div class="modal-actions">
+                <button id="modalCancelBtn" class="btn btn-secondary">Cancel</button>
+                <button id="modalDeleteBtn" class="btn btn-danger" disabled>Delete all</button>
             </div>
         </div>
     </div>

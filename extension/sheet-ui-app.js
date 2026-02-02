@@ -7,6 +7,7 @@ import {
   updateApplication,
   deleteApplication,
   createApplication,
+  clearAllData,
 } from "./lib/storage.js";
 import { getTodayISO } from "./lib/utils.js";
 import { renderTable, updateSortIndicators } from "./components/table.js";
@@ -136,6 +137,16 @@ function updateCount() {
     totalCountEl.textContent = `Total: ${total}`;
   } else {
     totalCountEl.textContent = `Total: ${shown}/${total}`;
+  }
+
+  // Update clear all menu item state
+  const clearAllBtn = document.getElementById("menuClearAll");
+  if (total === 0) {
+    clearAllBtn.disabled = true;
+    clearAllBtn.title = "No applications to delete";
+  } else {
+    clearAllBtn.disabled = false;
+    clearAllBtn.title = "";
   }
 }
 
@@ -374,6 +385,75 @@ async function handleImportJSON(event) {
 }
 
 /**
+ * Handle clear all click - show modal
+ */
+function handleClearAllClick() {
+  const modal = document.getElementById("clearAllModal");
+  const modalCount = document.getElementById("modalCount");
+  const deleteInput = document.getElementById("deleteConfirmInput");
+  const deleteBtn = document.getElementById("modalDeleteBtn");
+
+  // Update count display
+  const count = applications.length;
+  if (count === 0) {
+    // Disable the menu item if there are no applications
+    document.getElementById("menuClearAll").disabled = true;
+    document.getElementById("menuClearAll").title = "No applications to delete";
+    return;
+  }
+
+  modalCount.textContent = `${count} application${count !== 1 ? "s" : ""} will be deleted`;
+
+  // Reset input and button
+  deleteInput.value = "";
+  deleteBtn.disabled = true;
+
+  // Show modal
+  modal.style.display = "flex";
+
+  // Focus on cancel button by default
+  setTimeout(() => {
+    document.getElementById("modalCancelBtn").focus();
+  }, 100);
+}
+
+/**
+ * Handle modal close
+ */
+function handleModalClose() {
+  const modal = document.getElementById("clearAllModal");
+  const deleteInput = document.getElementById("deleteConfirmInput");
+
+  modal.style.display = "none";
+  deleteInput.value = "";
+}
+
+/**
+ * Handle clear all confirmation
+ */
+async function handleClearAllConfirm() {
+  try {
+    // Clear all data
+    await clearAllData();
+
+    // Reload applications
+    await loadApplications();
+
+    // Re-render UI
+    render();
+
+    // Close modal
+    handleModalClose();
+
+    // Show success message
+    showSuccessMessage("All applications have been deleted");
+  } catch (error) {
+    console.error("Failed to clear all applications:", error);
+    alert("Failed to clear applications: " + error.message);
+  }
+}
+
+/**
  * Setup event listeners
  */
 function setupEventListeners() {
@@ -382,13 +462,41 @@ function setupEventListeners() {
     .getElementById("addRowBtn")
     .addEventListener("click", handleAddApplication);
 
-  // Export buttons
-  document
-    .getElementById("exportCsvBtn")
-    .addEventListener("click", handleExportCSV);
-  document
-    .getElementById("exportJsonBtn")
-    .addEventListener("click", handleExportJSON);
+  // More menu toggle
+  const moreMenuBtn = document.getElementById("moreMenuBtn");
+  const moreMenu = document.getElementById("moreMenu");
+
+  moreMenuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isVisible = moreMenu.style.display === "block";
+    moreMenu.style.display = isVisible ? "none" : "block";
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener("click", () => {
+    moreMenu.style.display = "none";
+  });
+
+  // Menu items
+  document.getElementById("menuExportCsv").addEventListener("click", () => {
+    moreMenu.style.display = "none";
+    handleExportCSV();
+  });
+
+  document.getElementById("menuExportJson").addEventListener("click", () => {
+    moreMenu.style.display = "none";
+    handleExportJSON();
+  });
+
+  document.getElementById("menuImportJson").addEventListener("click", () => {
+    moreMenu.style.display = "none";
+    document.getElementById("importJsonInput").click();
+  });
+
+  document.getElementById("menuClearAll").addEventListener("click", () => {
+    moreMenu.style.display = "none";
+    handleClearAllClick();
+  });
 
   // Import button
   document
@@ -507,6 +615,35 @@ function setupEventListeners() {
       handleCloseSidePeek();
     }
   });
+
+  // Clear all modal events
+  const modal = document.getElementById("clearAllModal");
+  const modalOverlay = modal.querySelector(".modal-overlay");
+  const modalCancelBtn = document.getElementById("modalCancelBtn");
+  const modalDeleteBtn = document.getElementById("modalDeleteBtn");
+  const deleteConfirmInput = document.getElementById("deleteConfirmInput");
+
+  // Close modal on overlay click
+  modalOverlay.addEventListener("click", handleModalClose);
+
+  // Close modal on cancel
+  modalCancelBtn.addEventListener("click", handleModalClose);
+
+  // Close modal on ESC key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.style.display === "flex") {
+      handleModalClose();
+    }
+  });
+
+  // Enable/disable delete button based on input
+  deleteConfirmInput.addEventListener("input", (e) => {
+    const value = e.target.value;
+    modalDeleteBtn.disabled = value !== "DELETE";
+  });
+
+  // Handle delete confirmation
+  modalDeleteBtn.addEventListener("click", handleClearAllConfirm);
 }
 
 /**
