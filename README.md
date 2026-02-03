@@ -141,7 +141,9 @@ extension/
 1. Click the three-dot menu (⋯) in the top-right corner
 2. Select "Import JSON"
 3. Choose a previously exported JSON file
-4. Data will be merged with existing applications
+4. Select import mode:
+   - **Add to current sheet** (default): Imported applications are added to your existing data
+   - **Replace all existing data**: Deletes all current applications and replaces with imported data (requires typing **REPLACE** to confirm)
 
 ### Clearing All Data
 
