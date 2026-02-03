@@ -174,15 +174,24 @@ export async function exportData() {
 
 /**
  * Import data from JSON
- * @param {Object} data
+ * @param {Object} data - Exported data object
+ * @param {string} mode - 'add' (merge) or 'replace' (overwrite)
  * @returns {Promise<void>}
  */
-export async function importData(data) {
+export async function importData(data, mode = "add") {
   if (!data || !data.applications) {
     throw new Error("Invalid import data format");
   }
 
-  await setInStorage(STORAGE_KEY, data.applications);
+  if (mode === "replace") {
+    // Replace: Clear existing and set new data
+    await setInStorage(STORAGE_KEY, data.applications);
+  } else {
+    // Add: Merge imported data with existing data
+    const existingData = await getFromStorage(STORAGE_KEY);
+    const mergedData = { ...existingData, ...data.applications };
+    await setInStorage(STORAGE_KEY, mergedData);
+  }
 
   if (data.customSchema) {
     await updateCustomSchema(data.customSchema);

@@ -1149,6 +1149,97 @@ body {
   cursor: not-allowed;
 }
 
+/* Import Modal Specific Styles */
+.import-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.import-option {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px;
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--color-bg);
+}
+
+.import-option:hover {
+  border-color: var(--color-primary);
+  background: var(--color-bg-secondary);
+}
+
+.import-option input[type="radio"] {
+  margin-top: 2px;
+  margin-right: 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.option-content {
+  flex: 1;
+}
+
+.option-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+
+.recommended-badge {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-success);
+}
+
+.option-description {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.destructive-option {
+  border-color: #fee2e2;
+}
+
+.destructive-option:hover {
+  border-color: var(--color-danger);
+  background: #fef2f2;
+}
+
+@media (prefers-color-scheme: dark) {
+  .destructive-option {
+    border-color: #7f1d1d;
+  }
+  
+  .destructive-option:hover {
+    background: #450a0a;
+    border-color: var(--color-danger);
+  }
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 
 /* Responsive */
 @media (max-width: 768px) {

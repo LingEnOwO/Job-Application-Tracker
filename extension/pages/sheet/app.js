@@ -372,19 +372,101 @@ async function handleExportJSON() {
 }
 
 /**
- * Handle import JSON
+ * Handle import JSON - open modal instead of direct import
  */
 async function handleImportJSON(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  await importFromJSON(file, async () => {
-    await loadApplications();
-    render();
-  });
+  // Store the file for later use
+  window.pendingImportFile = file;
 
   // Reset file input
   event.target.value = "";
+
+  // Show import modal
+  const modal = document.getElementById("importModal");
+  const replaceConfirmation = document.getElementById("importConfirmation");
+  const replaceInput = document.getElementById("replaceConfirmInput");
+  const importBtn = document.getElementById("importConfirmBtn");
+  const addRadio = document.querySelector(
+    'input[name="importMode"][value="add"]',
+  );
+
+  // Reset modal state
+  addRadio.checked = true;
+  replaceConfirmation.style.display = "none";
+  replaceInput.value = "";
+  importBtn.disabled = false;
+
+  modal.style.display = "flex";
+}
+
+/**
+ * Handle import mode change
+ */
+function handleImportModeChange() {
+  const replaceRadio = document.querySelector(
+    'input[name="importMode"][value="replace"]',
+  );
+  const replaceConfirmation = document.getElementById("importConfirmation");
+  const importBtn = document.getElementById("importConfirmBtn");
+
+  if (replaceRadio.checked) {
+    replaceConfirmation.style.display = "block";
+    importBtn.disabled = true;
+  } else {
+    replaceConfirmation.style.display = "none";
+    importBtn.disabled = false;
+  }
+}
+
+/**
+ * Handle replace confirmation input
+ */
+function handleReplaceConfirmInput() {
+  const replaceInput = document.getElementById("replaceConfirmInput");
+  const importBtn = document.getElementById("importConfirmBtn");
+  const replaceRadio = document.querySelector(
+    'input[name="importMode"][value="replace"]',
+  );
+
+  if (replaceRadio.checked) {
+    importBtn.disabled = replaceInput.value !== "REPLACE";
+  }
+}
+
+/**
+ * Handle import confirm
+ */
+async function handleImportConfirm() {
+  const file = window.pendingImportFile;
+  if (!file) return;
+
+  const mode = document.querySelector('input[name="importMode"]:checked').value;
+  const modal = document.getElementById("importModal");
+
+  try {
+    await importFromJSON(file, mode, async () => {
+      await loadApplications();
+      render();
+    });
+
+    modal.style.display = "none";
+    delete window.pendingImportFile;
+  } catch (error) {
+    console.error("Import error:", error);
+    alert("Failed to import: " + error.message);
+  }
+}
+
+/**
+ * Handle import modal close
+ */
+function handleImportModalClose() {
+  const modal = document.getElementById("importModal");
+  modal.style.display = "none";
+  delete window.pendingImportFile;
 }
 
 /**
@@ -647,6 +729,40 @@ function setupEventListeners() {
 
   // Handle delete confirmation
   modalDeleteBtn.addEventListener("click", handleClearAllConfirm);
+
+  // Import modal events
+  const importModal = document.getElementById("importModal");
+  const importOverlay = importModal.querySelector(".modal-overlay");
+  const importCancelBtn = document.getElementById("importCancelBtn");
+  const importConfirmBtn = document.getElementById("importConfirmBtn");
+  const replaceConfirmInput = document.getElementById("replaceConfirmInput");
+  const importModeRadios = document.querySelectorAll(
+    'input[name="importMode"]',
+  );
+
+  // Close import modal on overlay click
+  importOverlay.addEventListener("click", handleImportModalClose);
+
+  // Close import modal on cancel
+  importCancelBtn.addEventListener("click", handleImportModalClose);
+
+  // Close import modal on ESC key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && importModal.style.display === "flex") {
+      handleImportModalClose();
+    }
+  });
+
+  // Handle import mode change
+  importModeRadios.forEach((radio) => {
+    radio.addEventListener("change", handleImportModeChange);
+  });
+
+  // Enable/disable import button based on confirmation input
+  replaceConfirmInput.addEventListener("input", handleReplaceConfirmInput);
+
+  // Handle import confirmation
+  importConfirmBtn.addEventListener("click", handleImportConfirm);
 }
 
 /**

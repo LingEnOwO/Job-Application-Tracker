@@ -136,6 +136,48 @@
         </div>
     </div>
 
+    <!-- Import JSON Modal -->
+    <div id="importModal" class="modal" style="display: none;">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <h2 class="modal-title">Import applications</h2>
+            
+            <div class="import-options">
+                <label class="import-option">
+                    <input type="radio" name="importMode" value="add" checked>
+                    <div class="option-content">
+                        <div class="option-title">Add to current sheet <span class="recommended-badge">(recommended)</span></div>
+                        <div class="option-description">
+                            Imported applications will be added to your existing data.
+                            Existing applications will remain unchanged.
+                        </div>
+                    </div>
+                </label>
+
+                <label class="import-option destructive-option">
+                    <input type="radio" name="importMode" value="replace">
+                    <div class="option-content">
+                        <div class="option-title">Replace all existing data</div>
+                        <div class="option-description">
+                            This will delete all existing applications and replace them with the imported data.
+                            <strong>This action cannot be undone.</strong>
+                        </div>
+                    </div>
+                </label>
+            </div>
+
+            <div class="modal-confirmation" id="importConfirmation" style="display: none;">
+                <label for="replaceConfirmInput" class="confirmation-label">Type <strong>REPLACE</strong> to confirm</label>
+                <input type="text" id="replaceConfirmInput" class="confirmation-input" placeholder="REPLACE" autocomplete="off">
+            </div>
+
+            <div class="modal-actions">
+                <button id="importCancelBtn" class="btn btn-secondary">Cancel</button>
+                <button id="importConfirmBtn" class="btn btn-primary">Import</button>
+            </div>
+        </div>
+    </div>
+
     <script src="app.js" type="module"></script>
 </body>
 
