@@ -488,6 +488,45 @@ body {
   border-bottom: 2px solid var(--color-border);
 }
 
+/* Fixed width columns for compact layout */
+.applications-table th[data-sort="applyDate"],
+.applications-table th[data-sort="responseDate"],
+.applications-table .date-cell {
+  width: 155px;
+  max-width: 155px;
+}
+
+.applications-table th.col-job-id,
+.applications-table .job-id-cell {
+  width: 132px;
+  max-width: 132px;
+}
+
+.applications-table .expand-gutter {
+  width: 40px;
+  max-width: 40px;
+}
+
+.applications-table .actions-cell {
+  width: 80px;
+  max-width: 80px;
+}
+
+.applications-table th[data-sort="position"],
+.applications-table td[data-field="position"] {
+  max-width: 220px;
+}
+
+.applications-table th[data-sort="company"],
+.applications-table td[data-field="company"] {
+  max-width: 200px;
+}
+
+.applications-table th[data-sort="stage"] {
+  width: 140px;
+  max-width: 140px;
+}
+
 .applications-table th.sortable {
   cursor: pointer;
   user-select: none;
@@ -555,6 +594,16 @@ body {
 
 .date-cell {
   padding: 8px 12px !important;
+}
+
+.job-id-cell {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-family: 'Courier New', monospace;
+  padding: 14px 12px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .date-input {

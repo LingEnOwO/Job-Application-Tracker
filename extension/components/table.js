@@ -85,6 +85,7 @@ export function renderTable(
       </td>
       <td contenteditable="true" data-field="company">${app.company || ""}</td>
       <td contenteditable="true" data-field="position">${app.position || ""}</td>
+      <td class="job-id-cell">${app.jobId || ""}</td>
       <td>
         <select class="stage-select stage-${app.stage || "Applied"}" data-id="${app.id}">
           <option value="Applied" ${app.stage === "Applied" ? "selected" : ""}>Applied</option>
