@@ -73,23 +73,12 @@ export async function exportAsJSON() {
  * @param {Function} onSuccess
  */
 export async function importFromJSON(file, mode, onSuccess) {
-  try {
-    const content = await readFileAsText(file);
-    const data = JSON.parse(content);
+  const content = await readFileAsText(file);
+  const data = JSON.parse(content);
 
-    await importData(data, mode);
+  await importData(data, mode);
 
-    const message =
-      mode === "replace"
-        ? "Data replaced successfully!"
-        : "Data imported and added successfully!";
-    alert(message);
-
-    if (onSuccess) onSuccess();
-  } catch (error) {
-    console.error("Import error:", error);
-    alert("Failed to import data: " + error.message);
-  }
+  if (onSuccess) onSuccess();
 }
 
 /**

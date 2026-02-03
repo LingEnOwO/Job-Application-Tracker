@@ -327,10 +327,10 @@ async function handleCreateApplication(formData) {
 /**
  * Show success message
  */
-function showSuccessMessage(message) {
+function showSuccessMessage(message, type = "success") {
   // Create message element
   const messageEl = document.createElement("div");
-  messageEl.className = "success-message";
+  messageEl.className = `success-message ${type}`;
   messageEl.textContent = message;
   document.body.appendChild(messageEl);
 
@@ -454,9 +454,17 @@ async function handleImportConfirm() {
 
     modal.style.display = "none";
     delete window.pendingImportFile;
+
+    const message =
+      mode === "replace"
+        ? "Data replaced successfully"
+        : "Data imported and added successfully";
+    showSuccessMessage(message);
   } catch (error) {
     console.error("Import error:", error);
-    alert("Failed to import: " + error.message);
+    modal.style.display = "none";
+    delete window.pendingImportFile;
+    showSuccessMessage("Failed to import: " + error.message, "error");
   }
 }
 

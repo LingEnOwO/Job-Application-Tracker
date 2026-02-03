@@ -1035,6 +1035,10 @@ body {
   transform: translateY(0);
 }
 
+.success-message.error {
+  background: var(--color-danger);
+}
+
 /* Clear All Modal */
 .modal {
   position: fixed;
