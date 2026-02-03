@@ -4,7 +4,6 @@
   "version": "1.0.0",
   "description": "Track job applications with auto-extraction from job postings",
   "permissions": ["storage", "activeTab", "scripting", "sidePanel"],
-  "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
   },
@@ -14,12 +13,6 @@
   "side_panel": {
     "default_path": "pages/sidepanel/index.html"
   },
-  "web_accessible_resources": [
-    {
-      "resources": ["shared/*"],
-      "matches": ["<all_urls>"]
-    }
-  ],
   "icons": {
     "16": "assets/icon16.png",
     "48": "assets/icon48.png",
