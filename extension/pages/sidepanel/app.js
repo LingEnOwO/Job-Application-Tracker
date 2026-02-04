@@ -8,6 +8,7 @@ import { getTodayISO } from "../../services/utils.js";
 const form = document.getElementById("jobForm");
 const loadingState = document.getElementById("loadingState");
 const statusMessage = document.getElementById("statusMessage");
+const saveStatusMessage = document.getElementById("saveStatusMessage");
 const saveBtn = document.getElementById("saveBtn");
 const extractBtn = document.getElementById("extractBtn");
 
@@ -160,7 +161,8 @@ async function saveApplication(event) {
   event.preventDefault();
 
   try {
-    hideStatus();
+    // Hide save status message
+    saveStatusMessage.style.display = "none";
     saveBtn.disabled = true;
     saveBtn.textContent = "Saving...";
 
@@ -185,7 +187,14 @@ async function saveApplication(event) {
     // Update lastUpdated timestamp to trigger auto-refresh in sheet UI
     await chrome.storage.local.set({ lastUpdated: Date.now() });
 
-    showStatus("✓ Application saved successfully!", "success");
+    // Show success message near button
+    saveStatusMessage.textContent = "✓ Application saved successfully!";
+    saveStatusMessage.className = "status-message success";
+    saveStatusMessage.style.display = "block";
+
+    setTimeout(() => {
+      saveStatusMessage.style.display = "none";
+    }, 3000);
 
     // Reset form after short delay
     setTimeout(() => {
@@ -195,7 +204,10 @@ async function saveApplication(event) {
     }, 1500);
   } catch (error) {
     console.error("Save error:", error);
-    showStatus(`Error: ${error.message}`, "error");
+    // Show error message near button
+    saveStatusMessage.textContent = `Error: ${error.message}`;
+    saveStatusMessage.className = "status-message error";
+    saveStatusMessage.style.display = "block";
   } finally {
     saveBtn.disabled = false;
     saveBtn.textContent = "Save Application";

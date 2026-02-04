@@ -186,6 +186,22 @@
     .link-button:hover {
       text-decoration: underline;
     }
+
+    #saveStatusMessage {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 40px);
+      max-width: 560px;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      display: none;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      margin: 0;
+    }
   </style>
 </head>
 
@@ -260,6 +276,8 @@
         <textarea id="notes" name="notes"></textarea>
         <div class="help-text">Personal notes about this application</div>
       </div>
+
+      <div id="saveStatusMessage" class="status-message"></div>
 
       <div class="button-group">
         <button type="button" class="btn-secondary" id="extractBtn">Re-extract</button>
