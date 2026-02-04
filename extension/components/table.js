@@ -106,9 +106,8 @@ export function renderTable(
           </svg>
         </button>
         <div class="delete-confirm" style="display: none;">
-          <span class="delete-confirm-text">Delete?</span>
-          <button class="delete-confirm-btn" data-id="${app.id}">Yes</button>
-          <button class="delete-cancel-btn">No</button>
+          <button class="delete-confirm-btn" data-id="${app.id}" title="Confirm delete" aria-label="Confirm delete">✓</button>
+          <button class="delete-cancel-btn" title="Cancel" aria-label="Cancel">✕</button>
         </div>
       </td>
     </tr>
