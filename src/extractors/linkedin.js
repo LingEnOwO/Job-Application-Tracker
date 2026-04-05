@@ -6,47 +6,111 @@ export function detectLinkedIn() {
   return (
     window.location.hostname.includes("linkedin.com") &&
     (window.location.pathname.includes("/jobs/view/") ||
+      window.location.pathname.includes("/jobs/search/") ||
+      window.location.pathname.startsWith("/jobs/") ||
       document.querySelector("#job-details") !== null)
   );
+}
+
+/**
+ * Extract job data from LinkedIn's bootstrap data embedded in <code> tags.
+ * LinkedIn embeds server-side API responses in the HTML as JSON inside <code>
+ * elements before any client-side rendering. This is always present and doesn't
+ * depend on the SPA having finished rendering the DOM.
+ */
+function extractFromBootstrap() {
+  const codeTags = document.querySelectorAll("code");
+
+  for (const codeTag of codeTags) {
+    try {
+      const text = codeTag.textContent;
+      // Only bother parsing tags that contain job posting card data
+      if (!text.includes("JobPostingCard")) continue;
+
+      const json = JSON.parse(text);
+      const included = json.included;
+      if (!Array.isArray(included)) continue;
+
+      const result = {};
+
+      for (const item of included) {
+        const type = item.$type || "";
+
+        // JobPostingCard has the title and the "Company · Location" subtitle
+        if (type.includes("jobs.JobPostingCard")) {
+          if (item.title?.text) {
+            result.position = item.title.text.trim();
+          }
+          if (item.navigationBarSubtitle) {
+            const parts = item.navigationBarSubtitle.split(" · ");
+            if (parts[0]) result.company = parts[0].trim();
+            if (parts[1]) result.location = parts[1].trim();
+          }
+        }
+
+        // JobPosting (non-card) has the full description
+        if (
+          type.includes("jobs.JobPosting") &&
+          !type.includes("Card") &&
+          item.description?.text
+        ) {
+          result.jobDescription = item.description.text.trim();
+        }
+      }
+
+      if (result.position || result.company) {
+        return result;
+      }
+    } catch (e) {
+      // Skip non-JSON or malformed code tags
+    }
+  }
+
+  return null;
 }
 
 export function extractFromLinkedIn() {
   const data = {};
 
-  // Company name - look for anchor with /company/ in href near job header
-  const companyLink = document.querySelector('a[href*="/company/"]');
-  if (companyLink) {
-    data.company = companyLink.textContent.trim();
-  }
-
-  // Fallback: LinkedIn company name selector
-  if (!data.company) {
-    const companyEl = document.querySelector(
-      ".job-details-jobs-unified-top-card__company-name",
-    );
-    if (companyEl) {
-      data.company = companyEl.textContent.trim();
+  // --- Company ---
+  // Try specific class selectors first (precise, not affected by search list)
+  const companySelectors = [
+    ".job-details-jobs-unified-top-card__company-name",
+    ".jobs-unified-top-card__company-name",
+    ".topcard__org-name-link",
+  ];
+  for (const sel of companySelectors) {
+    const el = document.querySelector(sel);
+    if (el) {
+      data.company = el.textContent.trim();
+      break;
     }
   }
 
-  // Job title - look for h1 first
-  const titleEl = document.querySelector("h1");
-  if (titleEl) {
-    // If h1 contains an anchor, extract from that
-    const titleLink = titleEl.querySelector("a");
-    data.position = titleLink
-      ? titleLink.textContent.trim()
-      : titleEl.textContent.trim();
+  // Fallback: first /company/ link (unreliable on SRP — may be from search list)
+  if (!data.company) {
+    const companyLink = document.querySelector('a[href*="/company/"]');
+    if (companyLink) data.company = companyLink.textContent.trim();
   }
 
-  // Fallback: try common LinkedIn title selectors
+  // --- Position ---
+  // h1 works on /jobs/view/ pages; on the SRP the page h1 is "Search all jobs"
+  // so only use h1 if it doesn't look like a navigation heading
+  const h1 = document.querySelector("h1");
+  if (h1) {
+    const text = h1.textContent.trim();
+    if (!text.toLowerCase().includes("search") && text.length > 3) {
+      const link = h1.querySelector("a");
+      data.position = link ? link.textContent.trim() : text;
+    }
+  }
+
   if (!data.position) {
     const titleSelectors = [
       ".job-details-jobs-unified-top-card__job-title",
       ".topcard__title",
       ".jobs-unified-top-card__job-title",
     ];
-
     for (const selector of titleSelectors) {
       const el = document.querySelector(selector);
       if (el) {
@@ -56,24 +120,8 @@ export function extractFromLinkedIn() {
     }
   }
 
-  // Last resort fallback: parse from page title (format: "Job Title - Company | LinkedIn")
-  if (!data.position && document.title) {
-    const titleParts = document.title.split(/[-|]/);
-    if (titleParts.length > 0) {
-      const potentialTitle = titleParts[0].trim();
-      if (
-        potentialTitle &&
-        !potentialTitle.toLowerCase().includes("linkedin")
-      ) {
-        data.position = potentialTitle;
-      }
-    }
-  }
-
-  // Job description - target the main description container
+  // --- Description ---
   let descEl = document.querySelector("#job-details");
-
-  // Fallback: try other common LinkedIn description containers
   if (!descEl) {
     const descSelectors = [
       ".jobs-description-content__text",
@@ -81,7 +129,6 @@ export function extractFromLinkedIn() {
       ".description__text",
       ".jobs-description",
     ];
-
     for (const selector of descSelectors) {
       descEl = document.querySelector(selector);
       if (descEl) break;
@@ -89,27 +136,29 @@ export function extractFromLinkedIn() {
   }
 
   if (descEl) {
-    // Extract text using innerText (better whitespace handling than textContent)
     let descText = descEl.innerText || descEl.textContent || "";
-
-    // Clean up the description
     descText = descText
       .trim()
-      // Remove "Show more" / "Show less" buttons if present
       .replace(/\b(Show more|Show less)\b/gi, "")
-      // Collapse multiple blank lines into max 2 newlines
       .replace(/\n{3,}/g, "\n\n")
-      // Normalize whitespace within lines
       .replace(/[^\S\n]+/g, " ")
       .trim();
-
-    if (descText) {
-      data.jobDescription = descText;
-    }
+    if (descText) data.jobDescription = descText;
   }
 
-  // Note: LinkedIn does not expose stable job IDs in the DOM
-  // Job ID would need to be parsed from URL if needed in the future
+  // --- Bootstrap data fallback ---
+  // If the SPA hasn't rendered the job detail panel yet (common on SRP),
+  // fall back to LinkedIn's server-side bootstrap data in <code> tags.
+  if (!data.position || !data.company || !data.jobDescription) {
+    const bootstrap = extractFromBootstrap();
+    if (bootstrap) {
+      if (!data.position && bootstrap.position) data.position = bootstrap.position;
+      if (!data.company && bootstrap.company) data.company = bootstrap.company;
+      if (!data.location && bootstrap.location) data.location = bootstrap.location;
+      if (!data.jobDescription && bootstrap.jobDescription)
+        data.jobDescription = bootstrap.jobDescription;
+    }
+  }
 
   return data;
 }

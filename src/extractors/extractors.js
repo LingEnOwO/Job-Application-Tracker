@@ -117,7 +117,9 @@ function extractFallback() {
   if (document.title) {
     // Many sites use format: "Job Title - Company" or "Job Title | Company"
     // Extract the first part before common separators
-    const titleParts = document.title.split(/[-|@]/);
+    // Split on " - " / " | " / " @ " with surrounding spaces so hyphenated
+    // titles like "Full-Stack Engineer - Company" don't get truncated to "Full"
+    const titleParts = document.title.split(/\s[-|@]\s/);
     if (titleParts.length > 0) {
       const potentialTitle = titleParts[0].trim();
       // Only use if it's not too short (avoid single words like "Jobs")
@@ -185,11 +187,14 @@ function extractFallback() {
   }
 
   // Try to get main content for job description
-  const mainContent = document.querySelector(
-    "main, article, .job-description, .description",
-  );
-  if (mainContent) {
-    data.jobDescription = mainContent.textContent.trim();
+  // Skip <main> on LinkedIn — it encompasses the entire SRP (search list + detail panel)
+  if (!window.location.hostname.includes("linkedin.com")) {
+    const mainContent = document.querySelector(
+      "main, article, .job-description, .description",
+    );
+    if (mainContent) {
+      data.jobDescription = mainContent.textContent.trim();
+    }
   }
 
   return data;
