@@ -87,7 +87,7 @@ function detectATS() {
 /**
  * Extract from detected ATS
  * @param {string} ats
- * @returns {Object}
+ * @returns {Object|Promise<Object>}
  */
 function extractFromATS(ats) {
   switch (ats) {
@@ -202,9 +202,9 @@ function extractFallback() {
 
 /**
  * Main extraction function
- * @returns {Object} Extracted job data
+ * @returns {Promise<Object>} Extracted job data
  */
-export function extract() {
+export async function extract() {
   // Get today's date in local timezone
   const today = new Date();
   const year = today.getFullYear();
@@ -224,7 +224,7 @@ export function extract() {
   // Try ATS-specific extraction
   const ats = detectATS();
   if (ats) {
-    const atsData = extractFromATS(ats);
+    const atsData = await extractFromATS(ats);
     Object.assign(data, atsData);
     data.atsDetected = ats;
   } else {
